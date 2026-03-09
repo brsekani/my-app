@@ -50,7 +50,7 @@ export default function SignupForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className=" w-[50%] rounded-b mb-3 px-4 pt-3 pb-5 space-y-2"
+      className=" max-w-[640px] w-full rounded-b mb-3 px-4 pt-3 pb-5 space-y-2"
     >
       <label
         htmlFor="firstName"
@@ -129,7 +129,7 @@ export default function SignupForm() {
       />
 
       {errors.password && touched.password && (
-        <p className="text-red-500 text-xs ">{errors.password}</p>
+        <p className="text-red-500 text-xs">{errors.password}</p>
       )}
 
       <label

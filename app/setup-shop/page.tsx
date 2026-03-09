@@ -1,7 +1,7 @@
 import Link from "next/link";
-import SetupShopForm from "../_component/setup-shop/SetupShopForm";
-import ShopBadge from "../_component/setup-shop/ShopBadge";
-import StepIndicator from "../_component/setup-shop/StepIndicator";
+import SetupShopForm from "../../components/setup-shop/SetupShopForm";
+import ShopBadge from "../../components/setup-shop/ShopBadge";
+import StepIndicator from "../../components/setup-shop/StepIndicator";
 
 export default function SetupShopPage() {
   return (

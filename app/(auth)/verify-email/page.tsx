@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Badge from "@/components/Badge";
+import sms from "@/assets/svgs/sms-notification.svg";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -109,18 +111,7 @@ function VerifyEmailContent() {
 
       <main className="flex-1 flex items-center justify-center">
         <div className="w-full max-w-md flex flex-col items-center px-6 gap-5">
-          <div className="w-[110px] h-[30px] pt-[8px] pr-[16px] pb-[8px] pl-[8px] gap-[2px] flex items-center justify-between border-[#E5E5E5] text-[#F5F5F5] rounded-[24px] border">
-            <img
-              src="/sms notification.png"
-              alt="Shop Icon"
-              width={14}
-              height={14}
-              className="text-[#7ed957] text-xs"
-            />
-            <span className="font-medium text-[#111111] uppercase font-teachers text-[12px] leading-none tracking-normal">
-              OTP Sent
-            </span>
-          </div>
+          <Badge imageUrl={sms} text={"OTP SENT"} />
 
           <h1 className="font-black tracking-tight text-[32px] text-gray-900 uppercase gap-[24px]">
             Verify Your Email

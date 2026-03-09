@@ -3,13 +3,13 @@ import { useFormik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import SectionHeading from "@/app/_component/setup-shop-step2/SectionHeading";
-import FormActions from "@/app/_component/setup-shop-step2/FormActions";
-import StepIndicator from "@/app/_component/setup-shop-step2/StepIndicator";
-import ShopBadge from "@/app/_component/setup-shop-step2/ShopBadge";
-import WhatsAppField from "@/app/_component/setup-shop-step2/WhatsAppField";
+import SectionHeading from "@/components/setup-shop-step2/SectionHeading";
+import FormActions from "@/components/setup-shop-step2/FormActions";
+import StepIndicator from "@/components/setup-shop-step2/StepIndicator";
+import ShopBadge from "@/components/setup-shop-step2/ShopBadge";
+import WhatsAppField from "@/components/setup-shop-step2/WhatsAppField";
 import { useState } from "react";
-import ConfirmModal from "@/app/_component/setup-shop-step2/ConfirmModal";
+import ConfirmModal from "@/components/setup-shop-step2/ConfirmModal";
 
 interface WhatsAppValues {
   whatsapp: string;
