@@ -24,7 +24,7 @@ export default function SignupForm() {
     console.log("Signup values:", values);
 
     actions.resetForm();
-    router.push("/verifyEmail?email=" + encodeURIComponent(values.email));
+    router.push("/verify-email?email=" + encodeURIComponent(values.email));
   };
   const {
     values,
@@ -151,11 +151,11 @@ export default function SignupForm() {
         <p className="text-red-500 text-xs ">{errors.confirmPassword}</p>
       )}
 
-      <div className="pt-1 flex justify-center items-center">
+      <div className="pt-3 flex justify-center items-center w-full">
         <button
           disabled={isSubmitting}
           type="submit"
-          className=" w-[20%] text-center bg-[#7ed957] hover:bg-[#5fc23e] transition-colors text-white font-bold text-sm tracking-wide py-3 rounded-full border border-[#5fc23e]"
+          className=" md:text-[15px] w-[50%] text-center bg-[#7ed957] hover:bg-[#5fc23e] transition-colors text-white font-bold text-[12px] tracking-wide py-3 rounded-full border border-[#5fc23e]"
         >
           {isSubmitting ? "Sending..." : "Continue"}
         </button>

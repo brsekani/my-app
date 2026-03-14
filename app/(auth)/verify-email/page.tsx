@@ -78,7 +78,7 @@ function VerifyEmailContent() {
     setError("");
     setLoading(false);
     console.log("OTP verified for:", email, "token:", token);
-    router.push("/setupShop");
+    router.push("/setup-shop");
   };
 
   // ✅ handleResend restored as a proper function
@@ -99,21 +99,12 @@ function VerifyEmailContent() {
   const formattedCountdown = `00:${String(countdown).padStart(2, "0")}`;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <header className="p-4">
-        <Link
-          href="/"
-          className="inline-block bg-[#1a3a4a] text-white text-xs font-semibold px-4 py-2 rounded-full"
-        >
-          LOGO
-        </Link>
-      </header>
-
+    <div className="min-h-screen bg-white flex flex-col px-4 py-6">
       <main className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-md flex flex-col items-center px-6 gap-5">
+        <div className=" flex flex-col items-center px-6 gap-5 w-full max-w-sm ">
           <Badge imageUrl={sms} text={"OTP SENT"} />
 
-          <h1 className="font-black tracking-tight text-[32px] text-gray-900 uppercase gap-[24px]">
+          <h1 className="font-black tracking-tight text-center text-gray-900 uppercase gap-[24px] text-[24px] sm:text-[32px]">
             Verify Your Email
           </h1>
 
@@ -139,7 +130,7 @@ function VerifyEmailContent() {
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className={`w-11 h-11 text-center text-lg font-semibold rounded-lg border-2 bg-gray-100 focus:outline-none transition-colors
+                className={`  gap-2 sm:gap-3 w-10 h-10 sm:w-11 sm:h-11 text-center text-lg font-semibold rounded-lg border-2 bg-gray-100 focus:outline-none transition-colors
                   ${error ? "border-red-400 bg-red-50" : digit ? "border-[#1bc8c8] bg-white" : "border-transparent focus:border-[#1bc8c8]"}`}
               />
             ))}
@@ -175,7 +166,7 @@ function VerifyEmailContent() {
             )}
           </p>
 
-          <div className="flex gap-3 pt-1">
+          <div className="flex gap-3 pt-1 w-full justify-center">
             <Link
               href="/"
               className="px-8 py-2.5 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"

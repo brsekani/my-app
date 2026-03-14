@@ -4,16 +4,7 @@ import Link from "next/link";
 export default function ShopReadyPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="p-4">
-        <Link
-          href="/"
-          className="inline-block bg-[#1a3a4a] text-white text-xs font-semibold px-4 py-2 rounded-full"
-        >
-          LOGO
-        </Link>
-      </header>
-
-      <main className="flex-1 flex items-center justify-center px-4">
+      <main className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="flex flex-col items-center gap-5">
           <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center">
             <img
@@ -24,7 +15,7 @@ export default function ShopReadyPage() {
             />
           </div>
 
-          <h1 className="text-3xl font-black tracking-tight text-gray-900 uppercase text-center">
+          <h1 className="text-2xl sm:text-3xl  font-black tracking-tight text-gray-900 uppercase text-center">
             Your Shop Is Ready
           </h1>
 

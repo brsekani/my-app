@@ -21,7 +21,7 @@ export default function SetupShopForm() {
     validationSchema: shopSchema,
     onSubmit: async (values) => {
       console.log(values);
-      router.push("/setupShop/step-2");
+      router.push("/setup-shop/step-2");
     },
   });
 

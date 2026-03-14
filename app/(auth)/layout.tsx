@@ -1,7 +1,9 @@
+import AuthHeader from "@/components/AuthHeader";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      <p>tedt</p>
+      <AuthHeader />
       {children}
     </div>
   );

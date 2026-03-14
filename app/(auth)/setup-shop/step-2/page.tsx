@@ -60,19 +60,10 @@ export default function SetupShopStep2Page() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="p-4">
-        <Link
-          href="/"
-          className="inline-block bg-[#1a3a4a] text-white text-xs font-semibold px-4 py-2 rounded-full"
-        >
-          LOGO
-        </Link>
-      </header>
-
-      <main className="flex-1 flex items-center justify-center px-4">
-        <div className="w-full max-w-lg flex flex-col items-center gap-5">
+      <main className="flex-1 flex items-center justify-center px-4 py-8 ">
+        <div className="w-full max-w-sm flex flex-col items-center gap-5 px-4 py-8">
           <ShopBadge />
-          <h1 className="text-3xl font-black tracking-tight text-gray-900 uppercase text-center">
+          <h1 className=" font-black tracking-tight text-gray-900 text-2xl sm:text-3xl uppercase text-center">
             Set Up Your Shop
           </h1>
           <p className="text-sm text-gray-500 text-center">
