@@ -9,8 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.98.0",
     "formik": "^2.4.9",
-    "next": "16.1.6",
+    "next": "latest",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "yup": "^1.7.1"
