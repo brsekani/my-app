@@ -24,3 +24,14 @@ export const basicSchema = Yup.object().shape({
     .oneOf([Yup.ref("password"), null], "Passwords must match")
     .required("Confirm Password is required"),
 });
+
+export const stepOneSchema = Yup.object({
+  shopName: Yup.string().required("Shop name is required"),
+  shopBio: Yup.string().required("Shop bio is required"),
+});
+
+export const stepTwoSchema = Yup.object({
+  whatsappNumber: Yup.string()
+    .required("WhatsApp number is required")
+    .min(10, "Invalid number"),
+});

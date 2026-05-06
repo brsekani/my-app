@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.phone-input {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 👈 THIS is your spacing */
+}

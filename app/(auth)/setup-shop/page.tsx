@@ -1,24 +1,25 @@
-import Link from "next/link";
 import SetupShopForm from "../../../components/setup-shop/SetupShopForm";
 import ShopBadge from "../../../components/setup-shop/ShopBadge";
 import StepIndicator from "../../../components/setup-shop/StepIndicator";
 
 export default function SetupShopPage() {
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <main className="flex justify-center items-center min-h-screen px-4 py-8">
-        <div className="max-w-sm w-full flex flex-col gap-5 items-center">
-          <ShopBadge />
+    <main className="min-h-[90vh] bg-white flex flex-col items-center justify-center px-4 leading-[100%]">
+      <div className="max-w-[640px] w-full flex flex-col gap-6 items-center">
+        <ShopBadge />
 
-          <h1 className=" font-bold text-center text-2xl sm:text-3xl">
-            Set Up Your Shop
-          </h1>
+        <h1 className=" font-semibold text-center text-2xl sm:text-[32px] text-[#111111]">
+          Set Up Your Shop
+        </h1>
 
-          <StepIndicator currentStep={1} />
+        <p className="text-[16px] text-[#777777]">
+          Add details customers need to trust your shop.
+        </p>
 
-          <SetupShopForm />
-        </div>
-      </main>
-    </div>
+        <StepIndicator currentStep={1} />
+
+        <SetupShopForm />
+      </div>
+    </main>
   );
 }

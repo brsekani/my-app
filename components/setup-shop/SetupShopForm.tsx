@@ -8,6 +8,7 @@ import FormField from "./FormField";
 import FormActions from "./FormActions";
 import HelperText from "./HelperText";
 import SectionHeading from "./SectionHeader";
+import { useShopStore } from "@/store/shopStore";
 
 export default function SetupShopForm() {
   interface ShopValues {
@@ -15,12 +16,14 @@ export default function SetupShopForm() {
     shopBio: string;
   }
   const router = useRouter();
+  const { shopName, shopBio, setShopData } = useShopStore();
 
   const formik = useFormik<ShopValues>({
-    initialValues: { shopName: "", shopBio: "" },
+    initialValues: { shopName: shopName || "", shopBio: shopBio || "" },
+    enableReinitialize: true,
     validationSchema: shopSchema,
     onSubmit: async (values) => {
-      console.log(values);
+      setShopData(values); // 👈 save to global store
       router.push("/setup-shop/step-2");
     },
   });
@@ -28,7 +31,10 @@ export default function SetupShopForm() {
   // console.log(formik.values);
   return (
     <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4 w-full">
-      <SectionHeading />
+      <SectionHeading
+        title="Shop Information"
+        description="Add details customers need to trust your shop."
+      />
 
       <FormField
         id="shopName"

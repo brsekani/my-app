@@ -1,12 +1,14 @@
-export default function SectionHeading() {
+type Props = {
+  title: string;
+  description?: string;
+};
+
+export default function SectionHeading({ title, description }: Props) {
   return (
-    <div>
-      <p className="text-xs font-bold text-gray-700 uppercase tracking-wide">
-        Enter WhatsApp Number
-      </p>
-      <p className="text-xs text-gray-400 mt-0.5">
-        Customers will contact you through this WhatsApp number.
-      </p>
+    <div className="text-[14px] leading-[100%]">
+      <p className="font-medium text-[#111111] uppercase">{title}</p>
+
+      {description && <p className="text-[#777777] mt-1">{description}</p>}
     </div>
   );
 }

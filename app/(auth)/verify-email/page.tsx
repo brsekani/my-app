@@ -99,23 +99,24 @@ function VerifyEmailContent() {
   const formattedCountdown = `00:${String(countdown).padStart(2, "0")}`;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col px-4 py-6">
+    <div className="min-h-[90vh] bg-white flex flex-col px-4 py-6 leading-[100%]">
       <main className="flex-1 flex items-center justify-center">
-        <div className=" flex flex-col items-center px-6 gap-5 w-full max-w-sm ">
+        <div className=" flex flex-col items-center px-5 gap-6 w-full max-w-[640px]">
           <Badge imageUrl={sms} text={"OTP SENT"} />
 
-          <h1 className="font-black tracking-tight text-center text-gray-900 uppercase gap-[24px] text-[24px] sm:text-[32px]">
+          <h1 className="font-semibold text-center text-gray-900 uppercase gap-6 text-[24px] md:text-[32px]">
             Verify Your Email
           </h1>
 
-          <p className="text-sm text-gray-500 text-center">
-            We sent a 6-digit code to{" "}
-            <span className="text-gray-800 font-medium">{email}</span>
+          <p className="text-[16px] text-[#777777] text-center">
+            We sent a 6-digit code to {email}
           </p>
 
-          <hr className="w-full border-gray-200" />
+          <hr className="w-full border-[#E5E5E5]" />
 
-          <p className="text-sm text-gray-600">Enter the code sent below</p>
+          <p className="text-[14px] text-[#111111]">
+            Enter the code sent below
+          </p>
 
           <div className="flex gap-3" onPaste={handlePaste}>
             {otp.map((digit, index) => (
@@ -130,8 +131,8 @@ function VerifyEmailContent() {
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className={`  gap-2 sm:gap-3 w-10 h-10 sm:w-11 sm:h-11 text-center text-lg font-semibold rounded-lg border-2 bg-gray-100 focus:outline-none transition-colors
-                  ${error ? "border-red-400 bg-red-50" : digit ? "border-[#1bc8c8] bg-white" : "border-transparent focus:border-[#1bc8c8]"}`}
+                className={`md:text-[20px] text-[14px] gap-2 sm:gap-3 w-[calc((100%-40px)/6)] h-[47px] md:w-15 md:h-15 text-center text-lg font-semibold rounded-lg border-2 bg-[#F5F5F5] focus:outline-none transition-colors
+                  ${error ? "border-red-400 bg-red-50" : digit ? "border-[#68DB25] bg-white" : "border-transparent focus:border-[#68DB25]"}`}
               />
             ))}
           </div>
@@ -144,7 +145,7 @@ function VerifyEmailContent() {
             </p>
           )}
 
-          <p className="text-sm text-gray-500">
+          <p className="text-[14px] text-[#6B6B6B]">
             {canResend ? (
               <>
                 Didn&apos;t receive a code?{" "}
@@ -168,15 +169,15 @@ function VerifyEmailContent() {
 
           <div className="flex gap-3 pt-1 w-full justify-center">
             <Link
-              href="/"
-              className="px-8 py-2.5 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              href="/create-account"
+              className="px-8.5 py-2.5 rounded-full border border-[#111111] text-[14px] font-semibold text-[#111111] hover:bg-gray-50 transition-colors"
             >
               Back
             </Link>
             <button
               onClick={handleVerify}
               disabled={loading}
-              className="px-8 py-2.5 rounded-full bg-[#7ed957] hover:bg-[#5fc23e] border border-[#5fc23e] text-sm font-bold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8.5 py-2.5 rounded-full bg-[#7ed957] hover:bg-[#5fc23e] text-[14px] text-[#111111] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Verifying..." : "Verify"}
             </button>

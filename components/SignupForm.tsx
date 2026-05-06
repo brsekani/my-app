@@ -50,120 +50,153 @@ export default function SignupForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className=" max-w-[640px] w-full rounded-b mb-3 px-4 pt-3 pb-5 space-y-2"
+      className=" max-w-[640px] w-full space-y-6 leading-[100%]"
     >
-      <label
-        htmlFor="firstName"
-        className="block text-sm font-medium text-gray-700"
-      >
-        First Name
-      </label>
-      <input
-        value={values.firstName}
-        onChange={handleChange}
-        id="firstName"
-        type="text"
-        placeholder="Enter your first name"
-        onBlur={handleBlur}
-        className={`w-full focus:outline-none focus:ring-2 focus:ring-[#1bc8c8]/40 placeholder:text-[12px] text-[14px] text-[#111111]  font-normal placeholder:text-[#6B6B6B] border rounded-md px-3 py-2 ${errors.firstName && touched.firstName ? "border-red-500" : ""}`}
-      />
+      <div className="flex flex-col gap-2">
+        <label htmlFor="firstName" className="text-[14px] text-[#111111]">
+          First Name
+        </label>
+        <div className="space-y-0.5">
+          <input
+            value={values.firstName}
+            onChange={handleChange}
+            id="firstName"
+            type="text"
+            placeholder="Enter your first name"
+            onBlur={handleBlur}
+            className={`h-[45px] w-full bg-[#F5F5F5] rounded-sm px-[14px] text-[14px] text-[#111111] placeholder:text-[#6B6B6B] outline-none border transition-all duration-200
+  ${
+    errors.firstName && touched.firstName
+      ? "border-red-500 focus:ring-1 focus:ring-red-500"
+      : "border-none focus:ring-1 focus:ring-[#A7E981]"
+  }`}
+          />
 
-      {errors.firstName && touched.firstName && (
-        <p className="text-red-500 text-xs ">{errors.firstName}</p>
-      )}
+          {errors.firstName && touched.firstName && (
+            <p className="text-red-500 text-xs">{errors.firstName}</p>
+          )}
+        </div>
+      </div>
 
-      <label
-        htmlFor="lastName"
-        className="block text-sm font-medium text-gray-700"
-      >
-        Last Name
-      </label>
-      <input
-        id="lastName"
-        value={values.lastName}
-        onChange={handleChange}
-        type="text"
-        placeholder="Enter your last name"
-        onBlur={handleBlur}
-        className={`w-full focus:outline-none focus:ring-2 focus:ring-[#1bc8c8]/40 placeholder:text-[12px] text-[14px] text-[#111111]  font-normal placeholder:text-[#6B6B6B] border rounded-md px-3 py-2 ${errors.lastName && touched.lastName ? "border-red-500" : ""}`}
-      />
+      <div className="flex flex-col gap-2">
+        <label htmlFor="lastName" className="text-[14px] text-[#111111]">
+          Last Name
+        </label>
+        <div className="space-y-0.5">
+          <input
+            id="lastName"
+            value={values.lastName}
+            onChange={handleChange}
+            type="text"
+            placeholder="Enter your last name"
+            onBlur={handleBlur}
+            className={`h-[45px] w-full bg-[#F5F5F5] rounded-sm px-[14px] text-[14px] text-[#111111] placeholder:text-[#6B6B6B] outline-none border transition-all duration-200
+  ${
+    errors.lastName && touched.lastName
+      ? "border-red-500 focus:ring-1 focus:ring-red-500"
+      : "border-none focus:ring-1 focus:ring-[#A7E981]"
+  }`}
+          />
+          {errors.lastName && touched.lastName && (
+            <p className="text-red-500 text-xs ">{errors.lastName}</p>
+          )}
+        </div>
+      </div>
 
-      {errors.lastName && touched.lastName && (
-        <p className="text-red-500 text-xs ">{errors.lastName}</p>
-      )}
+      <div className="flex flex-col gap-2">
+        <label htmlFor="email" className="text-[14px] text-[#111111]">
+          Email Address
+        </label>
+        <div className="space-y-0.5">
+          <input
+            id="email"
+            type="email"
+            value={values.email}
+            onChange={handleChange}
+            placeholder="Enter your Email Address"
+            onBlur={handleBlur}
+            className={`h-[45px] w-full bg-[#F5F5F5] rounded-sm px-[14px] text-[14px] text-[#111111] placeholder:text-[#6B6B6B] outline-none border transition-all duration-200
+  ${
+    errors.email && touched.email
+      ? "border-red-500 focus:ring-1 focus:ring-red-500"
+      : "border-none focus:ring-1 focus:ring-[#A7E981]"
+  }`}
+          />
 
-      <label
-        htmlFor="email"
-        className="block text-sm font-medium text-gray-700"
-      >
-        Email Address
-      </label>
-      <input
-        id="email"
-        type="email"
-        value={values.email}
-        onChange={handleChange}
-        placeholder="Enter your Email Address"
-        onBlur={handleBlur}
-        className={`w-full border focus:outline-none focus:ring-2 focus:ring-[#1bc8c8]/40 placeholder:text-[12px] text-[14px] text-[#111111]  font-normal placeholder:text-[#6B6B6B] rounded-md px-3 py-2 ${errors.email && touched.email ? "border-red-500" : ""}`}
-      />
+          {errors.email && touched.email && (
+            <p className="text-red-500 text-xs ">{errors.email}</p>
+          )}
+        </div>
+      </div>
 
-      {errors.email && touched.email && (
-        <p className="text-red-500 text-xs ">{errors.email}</p>
-      )}
+      <div className="flex flex-col gap-2">
+        <label htmlFor="password" className="text-[14px] text-[#111111]">
+          Password
+        </label>
 
-      <label
-        htmlFor="password"
-        className="block text-sm font-medium text-gray-700"
-      >
-        Password
-      </label>
-      <input
-        id="password"
-        type="password"
-        value={values.password}
-        onChange={handleChange}
-        placeholder="Enter password"
-        onBlur={handleBlur}
-        className={`w-full border focus:outline-none focus:ring-2 focus:ring-[#1bc8c8]/40 placeholder:text-[12px] text-[14px] text-[#111111]  font-normal placeholder:text-[#6B6B6B] rounded-md px-3 py-2 ${errors.password && touched.password ? "border-red-500" : ""}`}
-      />
+        <div className="space-y-0.5">
+          <input
+            id="password"
+            type="password"
+            value={values.password}
+            onChange={handleChange}
+            placeholder="Enter password"
+            onBlur={handleBlur}
+            className={`h-[45px] w-full bg-[#F5F5F5] rounded-sm px-[14px] text-[14px] text-[#111111] placeholder:text-[#6B6B6B] outline-none border transition-all duration-200
+  ${
+    errors.password && touched.password
+      ? "border-red-500 focus:ring-1 focus:ring-red-500"
+      : "border-none focus:ring-1 focus:ring-[#A7E981]"
+  }`}
+          />
 
-      {errors.password && touched.password && (
-        <p className="text-red-500 text-xs">{errors.password}</p>
-      )}
+          {errors.password && touched.password && (
+            <p className="text-red-500 text-xs">{errors.password}</p>
+          )}
+        </div>
+      </div>
 
-      <label
-        htmlFor="confirmPassword"
-        className="block text-sm font-medium text-gray-700"
-      >
-        Confirm Password
-      </label>
-      <input
-        id="confirmPassword"
-        type="password"
-        value={values.confirmPassword}
-        onChange={handleChange}
-        placeholder="Confirm password"
-        onBlur={handleBlur}
-        className={`w-full focus:outline-none focus:ring-2 focus:ring-[#1bc8c8]/40 placeholder:text-[12px] text-[14px] text-[#111111]  font-normal placeholder:text-[#6B6B6B] border  rounded-md px-3 py-2 ${errors.confirmPassword && touched.confirmPassword ? "border-red-500" : ""}`}
-      />
-      {errors.confirmPassword && touched.confirmPassword && (
-        <p className="text-red-500 text-xs ">{errors.confirmPassword}</p>
-      )}
+      <div className="flex flex-col gap-2">
+        <label htmlFor="confirmPassword" className="text-[14px] text-[#111111]">
+          Confirm Password
+        </label>
+        <div className="space-y-1">
+          <input
+            id="confirmPassword"
+            type="password"
+            value={values.confirmPassword}
+            onChange={handleChange}
+            placeholder="Confirm password"
+            onBlur={handleBlur}
+            className={`h-[45px] w-full bg-[#F5F5F5] rounded-sm px-[14px] text-[14px] text-[#111111] placeholder:text-[#6B6B6B] outline-none border transition-all duration-200
+  ${
+    errors.confirmPassword && touched.confirmPassword
+      ? "border-red-500 focus:ring-1 focus:ring-red-500"
+      : "border-none focus:ring-1 focus:ring-[#A7E981]"
+  }`}
+          />
+          {errors.confirmPassword && touched.confirmPassword && (
+            <p className="text-red-500 text-xs ">{errors.confirmPassword}</p>
+          )}
+        </div>
+      </div>
 
-      <div className="pt-3 flex justify-center items-center w-full">
+      <div className="flex justify-center items-center w-full gap-6">
         <button
           disabled={isSubmitting}
           type="submit"
-          className=" md:text-[15px] w-[50%] text-center bg-[#7ed957] hover:bg-[#5fc23e] transition-colors text-white font-bold text-[12px] tracking-wide py-3 rounded-full border border-[#5fc23e]"
+          className=" text-[14px] px-[23.5px] md:w-fit w-full py-2.5 text-center bg-[#A7E981] hover:bg-[#5fc23e] transition-colors text-[#111111]/50 font-semibold rounded-full"
         >
           {isSubmitting ? "Sending..." : "Continue"}
         </button>
       </div>
 
-      <p className="text-center text-sm pt-1">
+      <p className="text-center text-[14px] text-[#777777]">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold hover:underline">
+        <Link
+          href="/login"
+          className="font-semibold hover:underline text-[#111111]"
+        >
           Login
         </Link>
       </p>

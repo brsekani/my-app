@@ -11,20 +11,17 @@ export default function AuthHeader() {
   const isCreateAccount = pathname === "/create-account";
 
   return (
-    <header className="w-full">
+    <header className="w-full leading-[100%]">
       <nav className="px-[15px] py-3 sm:py-4   flex items-center justify-between">
         <Link
           href="/"
           className="py-[14px] px-[18px] w-[100px] h-[39px] flex justify-center items-center gap-4 rounded-full bg-[#004466] text-white"
         >
-          Login
+          Logo
         </Link>
 
         {isCreateAccount && (
-          <Link
-            href="/"
-            className="text-sm text-gray-500 flex items-center gap-2"
-          >
+          <Link href="/" className="flex items-center gap-2">
             <Image src={curveArrow} alt="Curve arrow" width={24} height={24} />
             <span className="font-semibold text-[14px] sm:text-[16px] leading-[100%] underline text-black">
               Back to Homepage

@@ -22,7 +22,7 @@ export default function FormField({
   isTextarea = false,
 }: FormFieldProps) {
   const hasError = error && touched;
-  const baseClass = `w-full text-sm flex-1 text-gray-800 placeholder:text-gray-400 bg-gray-100 border rounded-md px-3 focus:outline-none py-2.5 focus:outline-none focus:border-[#1bc8c8] transition-colors ${
+  const baseClass = `w-full text-sm flex-1 text-gray-800 placeholder:text-gray-400 bg-gray-100 border rounded-md px-3 focus:outline-none py-2.5 focus:outline-none focus:border-[#68DB25] transition-colors ${
     hasError ? "border-red-400" : "border-transparent"
   }`;
 

@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from "react-phone-number-input";
 import * as Yup from "yup";
 
 const passwordRules = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
@@ -21,6 +22,14 @@ export const basicSchema = Yup.object().shape({
     })
     .required("Password is required"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
+});
+
+export const whatsappSchema = Yup.object({
+  whatsapp: Yup.string()
+    .required("Phone number is required")
+    .test("is-valid-phone", "Invalid phone number", (value) =>
+      value ? isValidPhoneNumber(value) : false,
+    ),
 });
