@@ -24,8 +24,11 @@ export default function SignupForm() {
     console.log("Signup values:", values);
 
     actions.resetForm();
-    router.push("/verify-email?email=" + encodeURIComponent(values.email));
+    router.push(
+      "/create-account/verify-email?email=" + encodeURIComponent(values.email),
+    );
   };
+
   const {
     values,
     handleBlur,

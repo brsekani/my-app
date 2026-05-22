@@ -96,7 +96,7 @@ export default function Modal({
         <motion.div
           data-testid="modal-overlay-wrapper"
           className={`
-  fixed inset-0 z-[9999] bg-[#0000004D] dark:bg-[#FFFFFF40]
+  fixed inset-0 z-[9999] bg-[#0000004D]
   ${
     shouldUseBottomSheet
       ? "flex items-end justify-center"

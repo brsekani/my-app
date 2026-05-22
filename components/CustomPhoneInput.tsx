@@ -23,9 +23,9 @@ export default function CustomPhoneInput({
   const [field, meta, helpers] = useField(name);
 
   return (
-    <div className="space-y-2 w-full relative text-[16px] leading-[150%] text-[#0C0A09] dark:text-[#D6D3D1] bg-transparent">
+    <div className="space-y-2 w-full relative text-[16px] leading-[150%] text-[#0C0A09] bg-transparent">
       {label && (
-        <label className="text-[14px] leading-[140%] text-[#44403C] dark:text-[#D6D3D1]">
+        <label className="text-[14px] leading-[140%] text-[#44403C]">
           {label}
         </label>
       )}

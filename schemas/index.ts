@@ -33,3 +33,34 @@ export const whatsappSchema = Yup.object({
       value ? isValidPhoneNumber(value) : false,
     ),
 });
+
+export const loginSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required(" Email is required"),
+  password: Yup.string()
+    .min(5)
+    .matches(passwordRules, {
+      message:
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    })
+    .required("Password is required"),
+});
+
+export const forgotPasswordSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required(" Email is required"),
+});
+
+export const productSchema = Yup.object({
+  images: Yup.array()
+    .min(1, "At least one image is required")
+    .max(3, "You can only upload 3 images"),
+
+  productName: Yup.string().trim().required("Product name is required"),
+
+  description: Yup.string().trim().required("Description is required"),
+
+  price: Yup.object({
+    currency: Yup.string().required("Currency is required"),
+
+    amount: Yup.string().required("Amount is required"),
+  }),
+});

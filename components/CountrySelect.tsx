@@ -69,11 +69,11 @@ export default function CountrySelect({ value, onChange, labels }: any) {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute z-50 mt-2 w-full left-0 max-h-60 overflow-y-auto rounded-2xl bg-[#FFFFFF] dark:bg-[#000000]  text-[#0C0A09] dark:text-[#FAFAF9] shadow-xl p-2 space-y-1">
+        <div className="absolute z-50 mt-2 w-full left-0 max-h-60 overflow-y-auto rounded-2xl bg-[#FFFFFF] text-[#0C0A09]shadow-xl p-2 space-y-1">
           {/* Search */}
           <input
             placeholder="Search country..."
-            className="w-full px-3 py-2 mb-2 rounded-lg bg-transparent border border-[#D6D3D1] dark:border-[#44403C] outline-none"
+            className="w-full px-3 py-2 mb-2 rounded-lg bg-transparent border border-[#D6D3D1] outline-none"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -85,7 +85,7 @@ export default function CountrySelect({ value, onChange, labels }: any) {
                 onChange(country);
                 setOpen(false);
               }}
-              className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+              className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-100 cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <div className="w-fit h-fit rounded-full flex items-center justify-center overflow-hidden text-[24px]">

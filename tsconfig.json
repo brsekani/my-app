@@ -35,9 +35,9 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "schemas/index.js",
+    "schemas/index.ts",
     "app/setup-shop"
-  ],
+, "app/schemas/index.js"  ],
   "exclude": [
     "node_modules"
   ]

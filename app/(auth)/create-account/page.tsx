@@ -1,8 +1,7 @@
 import Badge from "@/components/Badge";
 import SignupForm from "@/components/SignupForm";
-import Link from "next/link";
-import shoppingIocn from "@/assets/svgs/shopping-cart.svg";
-import googleIcon from "@/assets/svgs/Group.svg";
+import shoppingIcon from "@/assets/svgs/shopping-cart.svg";
+import googleIcon from "@/assets/svgs/group.svg";
 import Image from "next/image";
 
 export default function CreateAccount() {
@@ -10,7 +9,7 @@ export default function CreateAccount() {
     <main className="w-full h-full flex items-center justify-center py-10 px-5">
       <section className="w-full h-fit flex flex-col md:max-w-[640px] items-center justify-center ">
         <div className="w-full h-fit flex flex-col items-center justify-center gap-6">
-          <Badge imageUrl={shoppingIocn} text={"CREATE YOUR FREE SHOP"} />
+          <Badge imageUrl={shoppingIcon} text={"CREATE YOUR FREE SHOP"} />
 
           <h2 className="text-black  flex items-center justify-center font-semibold  md:text-[32px] text-[24px] leading-[100%] tracking-normal">
             GET STARTED
