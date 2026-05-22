@@ -2,7 +2,7 @@
 
 import Badge from "@/components/Badge";
 import shoppingIcon from "@/assets/svgs/shopping-cart.svg";
-import googleIcon from "@/assets/svgs/group.svg";
+import googleIcon from "@/assets/svgs/google.svg";
 import eyeOpenIcon from "@/assets/svgs/eye-open.svg";
 import Image from "next/image";
 import { useFormik } from "formik";

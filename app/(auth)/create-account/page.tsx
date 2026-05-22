@@ -1,7 +1,7 @@
 import Badge from "@/components/Badge";
 import SignupForm from "@/components/SignupForm";
 import shoppingIcon from "@/assets/svgs/shopping-cart.svg";
-import googleIcon from "@/assets/svgs/group.svg";
+import googleIcon from "@/assets/svgs/google.svg";
 import Image from "next/image";
 
 export default function CreateAccount() {
