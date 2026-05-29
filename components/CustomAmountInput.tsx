@@ -61,7 +61,7 @@ export default function CustomAmountInput({
             }
             disabled={disabled}
           >
-            <SelectTrigger className="w-[76px] !h-[45px] rounded bg-[#F5F5F5] border-none shadow-none focus:ring-0 flex items-center">
+            <SelectTrigger className="w-[76px] !h-[45px] rounded bg-[#F5F5F5] border-none shadow-none focus:ring-0 flex items-center disabled:bg-[#F8F8F8] disabled:text-[#B0B0B0] disabled:border-[#E5E5E5] disabled:cursor-not-allowed">
               <SelectValue placeholder="Currency" />
             </SelectTrigger>
 
@@ -93,7 +93,7 @@ export default function CustomAmountInput({
               });
             }}
             onBlur={() => helpers.setTouched(true)}
-            className={`flex-1 h-[45px] px-4 bg-[#F5F5F5] rounded outline-none text-[14px] text-[#111111] placeholder:text-[#6B6B6B] border transition-all duration-200
+            className={`flex-1 h-[45px] px-4 bg-[#F5F5F5] disabled:bg-[#F8F8F8] disabled:text-[#B0B0B0] disabled:border-[#E5E5E5] disabled:cursor-not-allowed rounded outline-none text-[14px] text-[#111111] placeholder:text-[#6B6B6B] border transition-all duration-200
             ${
               hasError
                 ? "border-red-500 focus:ring-1 focus:ring-red-500"
