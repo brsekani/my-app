@@ -155,7 +155,7 @@ export default function Page() {
 
             {/* PRODUCT NAME */}
             <div className="flex flex-col gap-2">
-              <label className="text-[14px] text-[#111111]">Product Name</label>
+              <label className="text-[16px] text-[#111111]">Product Name</label>
 
               <div className="space-y-0.5">
                 <input

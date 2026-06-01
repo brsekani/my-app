@@ -64,3 +64,40 @@ export const productSchema = Yup.object({
     amount: Yup.string().required("Amount is required"),
   }),
 });
+
+export const profileSchema = Yup.object({
+  firstName: Yup.string().trim().required("First name is required"),
+
+  lastName: Yup.string().trim().required("Last name is required"),
+
+  email: Yup.string()
+    .trim()
+    .email("Enter a valid email address")
+    .required("Email is required"),
+
+  whatsapp: Yup.string()
+    .required("Phone number is required")
+    .test("is-valid-phone", "Invalid phone number", (value) =>
+      value ? isValidPhoneNumber(value) : false,
+    ),
+
+  shopName: Yup.string().trim().required("Shop name is required"),
+
+  shopBio: Yup.string().required("Shop bio is required"),
+});
+
+export const changePasswordSchema = Yup.object({
+  currentPassword: Yup.string().required("Current password is required"),
+
+  newPassword: Yup.string()
+    .min(5, "Password must be at least 5 characters")
+    .matches(passwordRules, {
+      message:
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    })
+    .required("New password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("newPassword")], "Passwords do not match")
+    .required("Please confirm your password"),
+});

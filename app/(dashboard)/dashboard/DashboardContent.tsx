@@ -16,6 +16,7 @@ import AddProductDrawer from "@/components/AddProductDrawer";
 import testImage from "@/assets/Images/test-image.jpg";
 import nothingHere from "@/assets/svgs/nothing-here.svg";
 import matchNotFound from "@/assets/svgs/match-not-found.svg";
+import Link from "next/link";
 
 export default function DashboardContent() {
   const router = useRouter();
@@ -189,7 +190,8 @@ export default function DashboardContent() {
       {hasProducts ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 xl:grid-cols-5 gap-[18px] md:gap-4">
           {products.map((product) => (
-            <div
+            <Link
+              href={`/products/${product?.id}`}
               key={product.id}
               className="md:w-[251.2px] min-w-[166px] h-full p-2 border border-[#E5E5E5] rounded-[8px] space-y-3"
             >
@@ -212,7 +214,7 @@ export default function DashboardContent() {
                   {product.description}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : hasSearch ? (
