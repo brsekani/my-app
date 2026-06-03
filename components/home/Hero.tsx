@@ -1,62 +1,79 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 
 export default function Hero() {
-  const navRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const floatTweenRef = useRef<gsap.core.Tween | null>(null);
 
-  useEffect(() => {
-    const tl = gsap.timeline();
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.set([headingRef.current, textRef.current, buttonRef.current], {
+        clearProps: "all",
+      });
 
-    tl.from(navRef.current, {
-      y: -50,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power3.out",
-    })
-      .from(
-        headingRef.current,
-        {
-          y: 80,
-          opacity: 0,
-          duration: 1,
-          ease: "power4.out",
-        },
-        "-=0.3",
-      )
-      .from(
-        textRef.current,
-        {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
+      const tl = gsap.timeline({
+        defaults: {
           ease: "power3.out",
         },
-        "-=0.5",
-      )
-      .from(
-        buttonRef.current,
-        {
-          scale: 0.85,
-          opacity: 0,
-          duration: 0.6,
-          ease: "back.out(1.7)",
-        },
-        "-=0.3",
-      );
+      });
 
-    gsap.to(buttonRef.current, {
-      y: -5,
-      duration: 1.5,
-      repeat: -1,
-      yoyo: true,
-      ease: "power1.inOut",
-    });
+      tl.fromTo(
+        headingRef.current,
+        { y: 80, opacity: 0, filter: "blur(10px)" },
+        {
+          y: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          duration: 1,
+          clearProps: "transform,opacity,filter",
+        },
+      )
+        .fromTo(
+          textRef.current,
+          { y: 40, opacity: 0, filter: "blur(8px)" },
+          {
+            y: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.8,
+            clearProps: "transform,opacity,filter",
+          },
+          "-=0.5",
+        )
+        .fromTo(
+          buttonRef.current,
+          { scale: 0.85, opacity: 0, filter: "blur(6px)" },
+          {
+            scale: 1,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.6,
+            ease: "back.out(1.7)",
+            clearProps: "opacity,filter",
+            onComplete: () => {
+              floatTweenRef.current = gsap.to(buttonRef.current, {
+                y: -5,
+                duration: 1.5,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut",
+              });
+            },
+          },
+          "-=0.3",
+        );
+    }, sectionRef);
+
+    return () => {
+      floatTweenRef.current?.kill();
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -71,25 +88,6 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 w-full h-screen px-4">
-        {/* Navbar */}
-        <div className="flex justify-center pt-8">
-          <div
-            ref={navRef}
-            className="w-full h-[47px] max-w-[500px] bg-[#FFFFFF80] backdrop-blur-sm rounded-full p-1 flex items-center justify-between"
-          >
-            <Link
-              href="/"
-              className="h-full px-[37px] w-[100px] flex justify-center items-center gap-4 rounded-full bg-[#004466] text-white"
-            >
-              Logo
-            </Link>
-
-            <button className="bg-[#68DB25] hover:bg-[#5FC91E] transition-colors text-[14px] font-semibold px-8 h-full rounded-full text-[#111111]">
-              Get Started
-            </button>
-          </div>
-        </div>
-
         {/* Hero Content */}
         <div className="flex items-center justify-center h-[calc(100%-100px)] px-7.5">
           <div className="max-w-[700px] text-center space-y-7">
@@ -116,12 +114,14 @@ export default function Hero() {
               customers.
             </p>
 
-            <button
-              ref={buttonRef}
-              className="bg-[#68DB25] hover:bg-[#5FC91E] transition-colors text-black font-semibold px-4.5 py-2.5 rounded-full text-[14px] cursor-pointer"
-            >
-              Create Your Free Store
-            </button>
+            <Link href={"/create-account"}>
+              <button
+                ref={buttonRef}
+                className="bg-[#68DB25] hover:bg-[#5FC91E] transition-colors text-black font-semibold px-4.5 py-2.5 rounded-full text-[14px] cursor-pointer"
+              >
+                Create Your Free Store
+              </button>
+            </Link>
           </div>
         </div>
       </div>
