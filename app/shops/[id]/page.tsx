@@ -150,14 +150,14 @@ export default function Page() {
                 PRODUCTS
               </h5>
 
-              {!hasProducts && (
+              {!hasProducts && hasSearch && (
                 <p className="text-[14px] text-[#111111]">
                   Results for “{searchValue}”
                 </p>
               )}
             </div>
 
-            {hasProducts && hasSearch ? (
+            {hasProducts ? (
               <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 xl:grid-cols-5 gap-[18px] md:gap-4">
                 {products.map((product) => (
                   <div
