@@ -19,7 +19,7 @@ import CustomAmountInput from "@/components/CustomAmountInput";
 import pictureIcon from "@/assets/svgs/picture.svg";
 import addIcon from "@/assets/svgs/add.svg";
 import Modal from "@/components/Modal";
-import ConfirmModal from "@/components/setup-shop-step2/ConfirmModal";
+
 import DeleteProductModal from "@/components/modals/DeleteProductModal";
 
 export default function Page() {

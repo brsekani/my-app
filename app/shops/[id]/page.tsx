@@ -8,17 +8,22 @@ import search from "@/assets/svgs/search.svg";
 import nothingHere from "@/assets/svgs/nothing-here.svg";
 import arrow from "@/public/arrow-30.svg";
 import testImage from "@/assets/Images/test-image.jpg";
+import testImage2 from "@/assets/Images/test-image-2.png";
 
 import EmptyState from "@/components/EmptyState";
 import PaginationNavigator from "@/components/PaginationNavigator";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import matchNotFound from "@/assets/svgs/match-not-found.svg";
+import Modal from "@/components/Modal";
+import ViewProductDetails from "@/components/modals/ViewProductDetails";
 
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the browser from doing a full page refresh
@@ -43,7 +48,7 @@ export default function Page() {
       price: "₦28,000",
       description:
         "Timeless blue denim jacket made from durable cotton fabric with a comfortable inner lining.",
-      image: testImage,
+      image: [testImage, testImage2],
     },
     {
       id: 2,
@@ -51,7 +56,7 @@ export default function Page() {
       price: "₦42,500",
       description:
         "Premium leather backpack with spacious compartments, padded straps, and laptop sleeve.",
-      image: testImage,
+      image: [testImage, testImage2],
     },
     {
       id: 3,
@@ -59,7 +64,7 @@ export default function Page() {
       price: "₦85,000",
       description:
         "Immersive sound experience with active noise cancellation and 30-hour battery life.",
-      image: testImage,
+      image: [testImage, testImage2],
     },
     {
       id: 4,
@@ -67,7 +72,7 @@ export default function Page() {
       price: "₦65,000",
       description:
         "Track workouts, heart rate, sleep, and notifications with this sleek fitness smartwatch.",
-      image: testImage,
+      image: [testImage, testImage2],
     },
     {
       id: 5,
@@ -75,7 +80,7 @@ export default function Page() {
       price: "₦120,000",
       description:
         "Ergonomic office chair with lumbar support, adjustable height, and breathable mesh.",
-      image: testImage,
+      image: [testImage, testImage2],
     },
     {
       id: 6,
@@ -83,7 +88,7 @@ export default function Page() {
       price: "₦24,999",
       description:
         "Compact speaker with deep bass, waterproof design, and up to 12 hours playback.",
-      image: testImage,
+      image: [testImage, testImage2],
     },
   ];
 
@@ -140,43 +145,58 @@ export default function Page() {
             </form>
 
             {/* Products Header */}
-            <h5 className="text-[14px] font-semibold text-[#111111]">
-              PRODUCTS
-            </h5>
+            <div className="space-y-2">
+              <h5 className="text-[14px] font-semibold text-[#111111]">
+                PRODUCTS
+              </h5>
 
-            {hasProducts ? (
+              {!hasProducts && (
+                <p className="text-[14px] text-[#111111]">
+                  Results for “{searchValue}”
+                </p>
+              )}
+            </div>
+
+            {hasProducts && hasSearch ? (
               <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 xl:grid-cols-5 gap-[18px] md:gap-4">
                 {products.map((product) => (
                   <div
-                    // href={`/products/${product?.id}`}
                     key={product.id}
-                    className="md:w-[251.2px] min-w-[166px] h-full p-2 border border-[#E5E5E5] rounded-[8px] space-y-3"
+                    className="md:w-[251.2px] min-w-[166px] h-full p-2 border border-[#E5E5E5] rounded-[8px]"
                   >
-                    <div className="relative w-full h-[235px] overflow-hidden rounded-[4px] border border-[#E5E5E5]">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                        sizes="(min-width: 768px) 251px, 166px"
-                      />
+                    <div
+                      className="space-y-3 cursor-pointer"
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setShowProductModal(true);
+                      }}
+                    >
+                      <div className="relative w-full h-[235px] overflow-hidden rounded-[4px] border border-[#E5E5E5]">
+                        <Image
+                          src={product.image.at(0)}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                          sizes="(min-width: 768px) 251px, 166px"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5 text-[14px] md:pb-2 pb-0">
+                        <p className="text-[#111111] font-semibold">
+                          {product.price}
+                        </p>
+
+                        <h3 className="text-[#111111] line-clamp-1">
+                          {product.name}
+                        </h3>
+
+                        <p className="line-clamp-2 text-[#777777]">
+                          {product.description}
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="space-y-1.5 text-[14px] md:pb-2 pb-0">
-                      <p className="text-[#111111] font-semibold">
-                        {product.price}
-                      </p>
-
-                      <h3 className="text-[#111111] line-clamp-1">
-                        {product.name}
-                      </h3>
-
-                      <p className="line-clamp-2 text-[#777777]">
-                        {product.description}
-                      </p>
-                    </div>
-
-                    <button className="hidden md:block border border-[#111111] w-full py-1.5 rounded-[100px] text-[14px] font-semibold">
+                    <button className="hidden md:block border border-[#111111] w-full py-1.5 rounded-[100px] text-[14px] font-semibold cursor-pointer">
                       Order on WhatsApp
                     </button>
                   </div>
@@ -237,6 +257,19 @@ export default function Page() {
           </Link>
         </div>
       </footer>
+
+      <Modal
+        closeOnOverlayClick={false}
+        open={showProductModal}
+        onClose={() => setShowProductModal(false)}
+        width="w-[640px]"
+      >
+        <ViewProductDetails
+          product={selectedProduct}
+          onClose={() => setShowProductModal(false)}
+          onConfirm={() => {}}
+        />
+      </Modal>
     </div>
   );
 }
