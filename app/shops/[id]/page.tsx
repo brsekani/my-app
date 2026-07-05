@@ -232,7 +232,7 @@ export default function Page() {
           </section>
 
           {/* Pagination */}
-          <div className="px-5 pb-5">
+          <div className="px-5 pb-20">
             <PaginationNavigator totalPages={0} loading={false} />
           </div>
         </div>

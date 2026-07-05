@@ -3,6 +3,28 @@ import * as Yup from "yup";
 
 const passwordRules = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
 
+const passwordValidation = (label = "Password") =>
+  Yup.string()
+    .min(5, `${label} must be at least 5 characters`)
+    .test("password-rules", function (value) {
+      if (!value) {
+        return this.createError({ message: `${label} is required` });
+      }
+
+      const missing: string[] = [];
+
+      if (!/[A-Z]/.test(value)) missing.push("one uppercase letter");
+      if (!/[a-z]/.test(value)) missing.push("one lowercase letter");
+      if (!/[0-9]/.test(value)) missing.push("one number");
+
+      if (missing.length === 0) return true;
+
+      return this.createError({
+        message: `${label} must contain at least ${missing.join(", and ")}`,
+      });
+    })
+    .required(`${label} is required`);
+
 export const basicSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, "First name must be at least 2 characters")
@@ -14,13 +36,7 @@ export const basicSchema = Yup.object().shape({
     .max(20, "Last name is too long")
     .required("Last name is required"),
   email: Yup.string().email("Invalid email").required(" Email is required"),
-  password: Yup.string()
-    .min(5)
-    .matches(passwordRules, {
-      message:
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-    })
-    .required("Password is required"),
+  password: passwordValidation("Password"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
@@ -36,13 +52,7 @@ export const whatsappSchema = Yup.object({
 
 export const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required(" Email is required"),
-  password: Yup.string()
-    .min(5)
-    .matches(passwordRules, {
-      message:
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-    })
-    .required("Password is required"),
+  password: passwordValidation("Password"),
 });
 
 export const forgotPasswordSchema = Yup.object().shape({
@@ -89,13 +99,7 @@ export const profileSchema = Yup.object({
 export const changePasswordSchema = Yup.object({
   currentPassword: Yup.string().required("Current password is required"),
 
-  newPassword: Yup.string()
-    .min(5, "Password must be at least 5 characters")
-    .matches(passwordRules, {
-      message:
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-    })
-    .required("New password is required"),
+  newPassword: passwordValidation("New password"),
 
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("newPassword")], "Passwords do not match")

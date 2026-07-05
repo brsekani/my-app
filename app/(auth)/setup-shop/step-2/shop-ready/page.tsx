@@ -42,7 +42,7 @@ export default function ShopReadyPage() {
               Go To Dashboard
             </Link>
             <Link
-              href="/dashboard/add-product"
+              href="/dashboard?add-product=true"
               className="px-[53px] py-2.5 rounded-full bg-[#7ed957] hover:bg-[#5fc23e] transition-colors"
             >
               Add Product

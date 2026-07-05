@@ -98,6 +98,14 @@ function VerifyEmailContent() {
 
   const formattedCountdown = `00:${String(countdown).padStart(2, "0")}`;
 
+  useEffect(() => {
+    const token = otp.join("");
+
+    if (token.length === 6 && !loading) {
+      handleVerify();
+    }
+  }, [otp]);
+
   return (
     <div className="min-h-[90vh] bg-white flex flex-col px-4 py-6 leading-[100%]">
       <main className="flex-1 flex items-center justify-center">

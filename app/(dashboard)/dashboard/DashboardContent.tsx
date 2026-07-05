@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -113,6 +113,17 @@ export default function DashboardContent() {
   const hasSearch = searchValue.trim().length > 0;
   const hasProducts = products.length > 0;
 
+  const handleCloseAddProduct = () => {
+    router.push("/dashboard");
+  };
+
+  useEffect(() => {
+    const shouldOpen = searchParams.get("add-product") === "true";
+    setOpenAddProductDrawer(shouldOpen);
+  }, [searchParams]);
+
+  console.log(openAddProductDrawer);
+
   return (
     <div className="leading-[100%] space-y-6">
       <h6 className="text-[16px] leading-[100%] font-medium text-[#111111]">
@@ -173,7 +184,7 @@ export default function DashboardContent() {
           <h5 className="text-[14px] font-semibold text-[#111111]">PRODUCTS</h5>
 
           <button
-            onClick={() => setOpenAddProductDrawer(true)}
+            onClick={() => router.push("/dashboard?add-product=true")}
             className="px-[33px] py-1.5 bg-[#68DB25] rounded-[100px] text-[14px] font-semibold text-[#111111]"
           >
             Add Product
@@ -240,7 +251,7 @@ export default function DashboardContent() {
             icon={nothingHere}
             title="You haven’t added any products yet."
             buttonText="Add Product"
-            onClick={() => setOpenAddProductDrawer(true)}
+            onClick={() => router.push("/dashboard?add-product=true")}
           />
         </div>
       )}
@@ -248,12 +259,12 @@ export default function DashboardContent() {
 
       <Drawer
         open={openAddProductDrawer}
-        onClose={() => setOpenAddProductDrawer(false)}
+        onClose={handleCloseAddProduct}
         placement="right"
         width="max-w-[640px] w-full"
         closeOnOverlayClick={false}
       >
-        <AddProductDrawer onClose={() => setOpenAddProductDrawer(false)} />
+        <AddProductDrawer onClose={handleCloseAddProduct} />
       </Drawer>
     </div>
   );
