@@ -17,8 +17,36 @@ import { useState } from "react";
 import matchNotFound from "@/assets/svgs/match-not-found.svg";
 import Modal from "@/components/Modal";
 import ViewProductDetails from "@/components/modals/ViewProductDetails";
+import { motion } from "framer-motion";
 
 export default function Page() {
+  const productGridVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.15,
+      },
+    },
+  };
+
+  const productCardVariants = {
+    hidden: {
+      opacity: 0,
+      y: 24,
+      scale: 0.96,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.45,
+        ease: [0.22, 1, 0.36, 1] as const,
+      },
+    },
+  };
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
@@ -95,6 +123,10 @@ export default function Page() {
   const hasSearch = searchValue.trim().length > 0;
   const hasProducts = products.length > 0;
 
+  const currentPage = searchParams.get("page") ?? "1";
+  const currentSearch = searchParams.get("q") ?? "";
+  const animationKey = `${currentSearch}-${currentPage}`;
+
   return (
     <div className="min-h-screen flex flex-col bg-white leading-[100%]">
       <main className="flex-1">
@@ -158,11 +190,26 @@ export default function Page() {
             </div>
 
             {hasProducts ? (
-              <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 xl:grid-cols-5 gap-[18px] md:gap-4">
+              <motion.div
+                key={animationKey}
+                variants={productGridVariants}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[18px] md:gap-4"
+              >
                 {products.map((product) => (
-                  <div
+                  <motion.div
                     key={product.id}
-                    className="md:w-[251.2px] min-w-[166px] h-full p-2 border border-[#E5E5E5] rounded-[8px]"
+                    variants={productCardVariants}
+                    whileHover={{
+                      y: -5,
+                      transition: {
+                        duration: 0.2,
+                        ease: "easeOut",
+                      },
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full min-w-0 h-full p-2 border border-[#E5E5E5] rounded-[8px] bg-white"
                   >
                     <div
                       className="space-y-3 cursor-pointer"
@@ -172,13 +219,22 @@ export default function Page() {
                       }}
                     >
                       <div className="relative w-full h-[235px] overflow-hidden rounded-[4px] border border-[#E5E5E5]">
-                        <Image
-                          src={product.image.at(0)}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                          sizes="(min-width: 768px) 251px, 166px"
-                        />
+                        <motion.div
+                          className="relative w-full h-full"
+                          whileHover={{ scale: 1.06 }}
+                          transition={{
+                            duration: 0.35,
+                            ease: "easeOut",
+                          }}
+                        >
+                          <Image
+                            src={product.image.at(0)}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                            sizes="(min-width: 1280px) 251px, (min-width: 768px) 33vw, 50vw"
+                          />
+                        </motion.div>
                       </div>
 
                       <div className="space-y-1.5 text-[14px] md:pb-2 pb-0">
@@ -196,12 +252,15 @@ export default function Page() {
                       </div>
                     </div>
 
-                    <button className="hidden md:block border border-[#111111] w-full py-1.5 rounded-[100px] text-[14px] font-semibold cursor-pointer">
+                    <button
+                      type="button"
+                      className="hidden md:block border border-[#111111] w-full py-1.5 rounded-[100px] text-[14px] font-semibold cursor-pointer transition-colors duration-200 hover:bg-[#111111] hover:text-white"
+                    >
                       Order on WhatsApp
                     </button>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : hasSearch ? (
               <div className="py-[88px] h-full">
                 <EmptyState
