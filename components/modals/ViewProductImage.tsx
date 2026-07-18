@@ -60,39 +60,34 @@ export default function ViewProductImage({
       <div
         onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
         onTouchEnd={handleTouchEnd}
-        className="relative w-full h-[500px] overflow-hidden rounded-lg bg-transparent"
+        className="relative w-full h-[500px] overflow-hidden rounded-lg bg-[#F5F5F5]"
       >
-        <AnimatePresence mode="wait" custom={direction}>
+        <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={currentIndex}
             custom={direction}
             initial={{
-              x: direction > 0 ? 80 : -80,
-              opacity: 0,
-              scale: 0.98,
+              x: direction > 0 ? "100%" : "-100%",
             }}
             animate={{
               x: 0,
-              opacity: 1,
-              scale: 1,
             }}
             exit={{
-              x: direction > 0 ? -80 : 80,
-              opacity: 0,
-              scale: 0.98,
+              x: direction > 0 ? "-100%" : "100%",
             }}
             transition={{
-              duration: 0.28,
-              ease: "easeInOut",
+              duration: 0.35,
+              ease: [0.22, 1, 0.36, 1],
             }}
             className="absolute inset-0"
           >
             <Image
               src={images[currentIndex]}
-              alt={`Preview ${currentIndex + 1}`}
+              alt={`Product image ${currentIndex + 1}`}
               fill
-              className="object-cover"
-              priority
+              className="object-contain"
+              // sizes="(max-width: 768px) 100vw, 640px"
+              priority={currentIndex === initialIndex}
             />
           </motion.div>
         </AnimatePresence>
