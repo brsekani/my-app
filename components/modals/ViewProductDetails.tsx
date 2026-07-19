@@ -1,29 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import testImage from "@/assets/Images/test-image.jpg";
-import testImage2 from "@/assets/Images/test-image-2.png";
 import Modal from "../Modal";
 import ViewProductImage from "./ViewProductImage";
 import { useState } from "react";
+import type { StoreTheme } from "@/types/store-theme";
+import { useStoreTheme } from "@/hooks/useStoreTheme";
 
 interface ViewProductDetailsProps {
-  product: {
-    id: number;
-    name: string;
-    price: string;
-    description: string;
-    image: any;
-  };
+  // product: {
+  //   id: number;
+  //   name: string;
+  //   price: string | number;
+  //   description: string;
+  //   image: any | any[];
+  // };
+  product: any;
   onClose: () => void;
   onConfirm: () => void;
 }
 
 export default function ViewProductDetails({
   product,
+
   onClose,
   onConfirm,
 }: ViewProductDetailsProps) {
+  const { storeTheme, themeLoaded } = useStoreTheme();
   const [openImages, setOpenImages] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
@@ -31,23 +34,35 @@ export default function ViewProductDetails({
     ? product.image
     : [product.image];
 
+  const formattedPrice =
+    typeof product.price === "number"
+      ? `₦${product.price.toLocaleString()}`
+      : product.price;
+
   return (
-    <div className="bg-[#FFFFFF] rounded w-full p-6 leading-[100%] space-y-6">
-      <div className="h-10 flex items-start justify-between border-b border-[#E5E5E5]">
-        <h2 className="text-[18px] font-semibold text-gray-900 uppercase tracking-wide">
-          {product?.name}
+    <div
+      className="w-full space-y-6 rounded p-6 leading-[100%]"
+      style={{
+        backgroundColor: storeTheme?.backgroundColor,
+      }}
+    >
+      <div className="flex h-10 items-start justify-between border-b border-black/10">
+        <h2 className="text-[18px] font-semibold uppercase tracking-wide text-[#111111]">
+          {product.name}
         </h2>
 
         <button
+          type="button"
           onClick={onClose}
-          className="text-[#111111] transition-colors w-[24px] h-[24px] cursor-pointer"
+          aria-label="Close product details"
+          className="h-6 w-6 cursor-pointer text-[#111111] transition-opacity hover:opacity-60"
         >
           ✕
         </button>
       </div>
 
-      <div className="flex gap-[2%] max-h-[188px] h-full">
-        {product?.image?.map((image: any, index: number) => (
+      <div className="flex max-h-[188px] gap-[2%]">
+        {previewImages.slice(0, 3).map((image: any, index: number) => (
           <button
             key={index}
             type="button"
@@ -55,44 +70,61 @@ export default function ViewProductDetails({
               setSelectedImageIndex(index);
               setOpenImages(true);
             }}
-            // onClick={() => setSelectedImage(image)}
-            className={`relative w-[32%] min-h-20 h-full aspect-square overflow-hidden rounded-[8px] border transition-all`}
+            className="relative aspect-square min-h-20 w-[32%] overflow-hidden rounded-lg border transition-all hover:opacity-90"
+            style={{
+              borderColor:
+                selectedImageIndex === index
+                  ? storeTheme.brandColor
+                  : "rgba(0,0,0,0.1)",
+              borderWidth: selectedImageIndex === index ? "2px" : "1px",
+            }}
           >
             <Image
               src={image}
-              alt={`preview-${index}`}
+              alt={`${product.name} preview ${index + 1}`}
               fill
               className="object-cover"
+              sizes="(max-width: 768px) 30vw, 180px"
             />
           </button>
         ))}
       </div>
 
-      <div className="space-y-1.5 text-[14px]">
-        <p className="text-[#111111] font-semibold md:text-[18px] text-[16px]">
-          ₦28,000
+      <div className="space-y-2 text-[14px]">
+        <p
+          className="text-[16px] font-semibold md:text-[18px]"
+          style={{
+            color: storeTheme.brandColor,
+          }}
+        >
+          {formattedPrice}
         </p>
 
-        <h3 className="text-[#111111]">Classic Blue Denim Jacket</h3>
+        <h3 className="font-semibold text-[#111111]">{product.name}</h3>
 
-        <p className=" text-[#777777]">
-          Timeless blue denim jacket made from durable cotton fabric with a
-          comfortable inner lining. Features front button closure and two chest
-          pockets. Available in sizes S, M, L, and XL. Length: 24 inches
-          (Medium). Perfect for casual outings and layering.
-        </p>
+        <p className="leading-6 text-[#777777]">{product.description}</p>
       </div>
 
-      <div className="flex gap-3 justify-center text-[14px] font-semibold text-[#111111]">
+      <div className="flex justify-center gap-3 text-[14px] font-semibold">
         <button
+          type="button"
           onClick={onClose}
-          className="px-[40.5px] py-2.5 rounded-full border border-[#111111] hover:bg-gray-50 transition-colors"
+          className="rounded-full border px-[40.5px] py-2.5 transition-colors hover:bg-black/5"
+          style={{
+            borderColor: storeTheme.brandColor,
+            color: storeTheme.brandColor,
+          }}
         >
           Cancel
         </button>
+
         <button
+          type="button"
           onClick={onConfirm}
-          className="px-4.5 py-2.5 rounded-full bg-[#68DB25] hover:bg-[#68DB01] text-[#111111] transition-colors"
+          className="rounded-full px-5 py-2.5 text-white transition-opacity hover:opacity-90"
+          style={{
+            backgroundColor: storeTheme.brandColor,
+          }}
         >
           Order on WhatsApp
         </button>
@@ -108,7 +140,7 @@ export default function ViewProductDetails({
           images={previewImages}
           initialIndex={selectedImageIndex}
           onClose={() => setOpenImages(false)}
-          onConfirm={() => {}}
+          onConfirm={onConfirm}
         />
       </Modal>
     </div>

@@ -20,6 +20,17 @@ export default function SettingsNavigation() {
       </Link>
 
       <Link
+        href="/settings/themes"
+        className={`py-2 px-4 rounded-full font-semibold transition-colors ${
+          pathname === "/settings/themes"
+            ? "bg-[#E5E5E5]"
+            : "hover:bg-[#F5F5F5]"
+        }`}
+      >
+        Themes
+      </Link>
+
+      <Link
         href="/settings/security"
         className={`py-2 px-4 rounded-full font-semibold transition-colors ${
           pathname === "/settings/security"
