@@ -17,24 +17,31 @@ import { productSchema } from "@/schemas";
 import CustomAmountInput from "@/components/CustomAmountInput";
 
 import pictureIcon from "@/assets/svgs/picture.svg";
+import nothingHere from "@/assets/svgs/nothing-here.svg";
 import addIcon from "@/assets/svgs/add.svg";
 import Modal from "@/components/Modal";
 
 import DeleteProductModal from "@/components/modals/DeleteProductModal";
+import {
+  useDeleteProductMutation,
+  useGetProductByIdQuery,
+  useUpdateProductMutation,
+} from "@/redux/api/productApi";
+import { useParams, useRouter } from "next/navigation";
+import ProductDetailsSkeleton from "@/components/skeletons/ProductDetailsSkeleton";
+import EmptyState from "@/components/EmptyState";
 
 export default function Page() {
-  const existingProduct = {
-    productName: "Wireless Headphones",
-    description:
-      "Premium noise-cancelling wireless headphones with long battery life.",
-    price: {
-      currency: "NGN",
-      amount: "45,000",
-    },
-    images: [testImage, testImage2],
-  };
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
 
-  const existingImages = existingProduct?.images || [];
+  const { data, isLoading, error } = useGetProductByIdQuery(id);
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  console.log(data);
+
+  const existingProduct = data?.data?.product;
+  const existingImages = existingProduct?.photos || [];
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -48,26 +55,54 @@ export default function Page() {
   );
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
       images: existingImages as (File | string | StaticImageData)[],
-      productName: existingProduct.productName || "",
-      description: existingProduct.description || "",
+      productName: existingProduct?.name || "",
+      description: existingProduct?.description || "",
       price: {
-        currency: existingProduct.price.currency || "NGN",
-        amount: existingProduct.price.amount || "",
+        currency: existingProduct?.price?.currency || "NGN",
+        amount: existingProduct?.price
+          ? Number(existingProduct.price).toLocaleString("en-NG")
+          : "",
       },
     },
 
     validationSchema: productSchema,
 
-    onSubmit: (values, { resetForm }) => {
-      console.log("FORM DATA:", values);
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        const formData = new FormData();
 
-      resetForm({
-        values,
-      });
+        formData.append("name", values.productName);
+        formData.append("description", values.description);
+        formData.append(
+          "price",
+          values.price.amount.replace(/,/g, ""), // remove commas
+        );
 
-      setIsEdit(false);
+        // dummy values for now
+        formData.append("compare_at_price", "0");
+        formData.append("stock_quantity", "100");
+        formData.append("status", "DRAFT");
+
+        // Only upload NEW images
+        values.images.forEach((image) => {
+          if (image instanceof File) {
+            formData.append("photos[]", image);
+          }
+        });
+
+        await updateProduct({
+          id,
+          formData,
+        }).unwrap();
+
+        resetForm({ values });
+        setIsEdit(false);
+      } catch (error) {
+        console.error(error);
+      }
     },
   });
 
@@ -125,6 +160,21 @@ export default function Page() {
     }
   };
 
+  if (isLoading) {
+    return <ProductDetailsSkeleton />;
+  }
+
+  if (error || !existingProduct) {
+    return (
+      <EmptyState
+        icon={nothingHere}
+        title="Product not found."
+        buttonText="Back to Products"
+        onClick={() => router.push("/dashboard")}
+      />
+    );
+  }
+
   return (
     <FormikProvider value={formik}>
       <div className="leading-[100%] space-y-6">
@@ -166,7 +216,7 @@ export default function Page() {
                   disabled={!dirty || !isEdit}
                   className="px-[33px] py-1.5 border-[#111111] border rounded-[100px] disabled:opacity-50"
                 >
-                  Update Product
+                  {isUpdating ? "Updating..." : "Update Product"}
                 </button>
               ) : (
                 <button
@@ -181,7 +231,6 @@ export default function Page() {
           </div>
           {/* LEFT */}
           <div className="w-full space-y-3">
-            {/* MAIN IMAGE */}
             {/* MAIN IMAGE */}
             <div
               onClick={() => {
@@ -417,8 +466,17 @@ export default function Page() {
       >
         <DeleteProductModal
           phoneNumber={"0923232323"}
+          loading={isDeleting}
           onEdit={() => setShowDeleteModal(false)}
-          onConfirm={() => {}}
+          onConfirm={async () => {
+            try {
+              await deleteProduct(id).unwrap();
+
+              router.push("/dashboard");
+            } catch (error) {
+              console.error(error);
+            }
+          }}
         />
       </Modal>
     </FormikProvider>

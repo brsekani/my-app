@@ -97,7 +97,7 @@ export default function AboutSection() {
 
   return (
     <section ref={sectionRef} className="md:py-8 py-10 md:px-[60px] px-5">
-      <div className="max-w-[1420px] mx-auto">
+      <div className="max-w-360 mx-auto">
         {/* Header */}
         <div className="grid lg:grid-cols-2 md:gap-10 gap-2 mb-10">
           <h2 className="about-title text-[18px] md:text-[20px] text-[#111111] uppercase leading-[100%]">

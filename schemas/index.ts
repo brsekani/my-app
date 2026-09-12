@@ -28,12 +28,12 @@ const passwordValidation = (label = "Password") =>
 export const basicSchema = Yup.object().shape({
   firstName: Yup.string()
     .min(2, "First name must be at least 2 characters")
-    .max(20, "First name is too long")
+    .max(25, "First name is too long")
     .required("First name is required"),
 
   lastName: Yup.string()
     .min(2, "Last name must be at least 2 characters")
-    .max(20, "Last name is too long")
+    .max(25, "Last name is too long")
     .required("Last name is required"),
   email: Yup.string().email("Invalid email").required(" Email is required"),
   password: passwordValidation("Password"),

@@ -4,18 +4,25 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Badge from "@/components/Badge";
 import sms from "@/assets/svgs/sms-notification.svg";
+import {
+  useResendVerificationMutation,
+  useVerifyEmailMutation,
+} from "@/redux/api/authApi";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get("email") || "your email";
+  const [verifyEmail, { isLoading }] = useVerifyEmailMutation();
+  const [resendVerification, { isLoading: isResending }] =
+    useResendVerificationMutation();
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
-  const [countdown, setCountdown] = useState(59);
+  const [countdown, setCountdown] = useState(1);
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -67,33 +74,59 @@ function VerifyEmailContent() {
     inputRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
   };
 
-  // ✅ handleVerify restored as a proper function
   const handleVerify = async () => {
-    const token = otp.join("");
-    if (token.length < 6) {
+    const otpCode = otp.join("");
+
+    if (otpCode.length !== 6) {
       setError("Please enter the full 6-digit code.");
       return;
     }
-    setLoading(true);
-    setError("");
-    setLoading(false);
-    console.log("OTP verified for:", email, "token:", token);
-    router.push("/setup-shop");
+
+    try {
+      setError("");
+      console.log(otpCode);
+      const response = await verifyEmail({
+        otp: otpCode,
+      }).unwrap();
+
+      console.log("Verification successful:", response);
+
+      router.replace("/setup-shop");
+    } catch (error: any) {
+      console.error(error);
+
+      setError(
+        error?.data?.message ??
+          "Unable to verify your email. Please try again.",
+      );
+    }
   };
 
   // ✅ handleResend restored as a proper function
   const handleResend = async () => {
     if (!canResend) return;
-    setResending(true);
-    setResendSuccess(false);
-    setError("");
-    setResending(false);
-    console.log("Resend OTP for:", email);
-    setResendSuccess(true);
-    setOtp(["", "", "", "", "", ""]);
-    setCountdown(59);
-    setCanResend(false);
-    inputRefs.current[0]?.focus();
+
+    try {
+      setError("");
+      setResendSuccess(false);
+
+      const response = await resendVerification().unwrap();
+
+      console.log("Resend successful:", response);
+
+      setResendSuccess(true);
+      setOtp(["", "", "", "", "", ""]);
+      setCountdown(1);
+      setCanResend(false);
+
+      inputRefs.current[0]?.focus();
+    } catch (error: any) {
+      console.error(error);
+
+      setError(
+        error?.data?.message ?? "Unable to resend the verification code.",
+      );
+    }
   };
 
   const formattedCountdown = `00:${String(countdown).padStart(2, "0")}`;
@@ -139,6 +172,7 @@ function VerifyEmailContent() {
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
+                disabled={isResending || isLoading}
                 className={`md:text-[20px] text-[14px] gap-2 sm:gap-3 w-[calc((100%-40px)/6)] h-[47px] md:w-15 md:h-15 text-center text-lg font-semibold rounded-lg border-2 bg-[#F5F5F5] focus:outline-none transition-colors
                   ${error ? "border-red-400 bg-red-50" : digit ? "border-[#68DB25] bg-white" : "border-transparent focus:border-[#68DB25]"}`}
               />
@@ -159,10 +193,10 @@ function VerifyEmailContent() {
                 Didn&apos;t receive a code?{" "}
                 <button
                   onClick={handleResend}
-                  disabled={resending}
+                  disabled={isResending || isLoading}
                   className="font-semibold text-gray-800 hover:underline disabled:opacity-50"
                 >
-                  {resending ? "Resending..." : "Resend code"}
+                  {isResending ? "Resending..." : "Resend Code"}
                 </button>
               </>
             ) : (
@@ -184,10 +218,10 @@ function VerifyEmailContent() {
             </Link>
             <button
               onClick={handleVerify}
-              disabled={loading}
+              disabled={isResending || isLoading}
               className="px-8.5 py-2.5 rounded-full bg-[#7ed957] hover:bg-[#5fc23e] text-[14px] text-[#111111] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Verifying..." : "Verify"}
+              {isLoading ? "Verifying..." : "Verify"}
             </button>
           </div>
         </div>

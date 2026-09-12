@@ -6,12 +6,14 @@ interface DeleteProductModalProps {
   phoneNumber: string;
   onEdit: () => void;
   onConfirm: () => void;
+  loading: boolean;
 }
 
 export default function DeleteProductModal({
   phoneNumber,
   onEdit,
   onConfirm,
+  loading,
 }: DeleteProductModalProps) {
   console.log(phoneNumber);
 
@@ -48,7 +50,7 @@ export default function DeleteProductModal({
           onClick={onConfirm}
           className="px-4.5 py-2.5 rounded-full bg-[#E32B2B] hover:bg-[#C92222] text-[#FFFFFF] transition-colors"
         >
-          Delete Product
+          {loading ? "Deleting..." : "Delete Product"}
         </button>
       </div>
     </div>

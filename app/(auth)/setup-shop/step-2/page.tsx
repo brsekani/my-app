@@ -14,15 +14,22 @@ import { Formik, Form } from "formik";
 import { whatsappSchema } from "@/schemas";
 import Modal from "@/components/Modal";
 import { useShopStore } from "@/store/shopStore";
+import { useCreateStoreMutation } from "@/redux/api/storeApi";
+import CustomAmountInput from "@/components/CustomAmountInput";
 
 interface WhatsAppValues {
   whatsapp: string;
+  currency: {
+    currency: string;
+    amount: string;
+  };
 }
 
 export default function SetupShopStep2Page() {
   const { shopName, shopBio, whatsapp, setShopData, hasHydrated } =
     useShopStore();
   const resetShop = useShopStore((state) => state.resetShop);
+  const [createStore, { isLoading }] = useCreateStoreMutation();
 
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
@@ -37,17 +44,32 @@ export default function SetupShopStep2Page() {
   async function handleConfirm() {
     if (!formValues) return;
 
-    setShowModal(false);
+    try {
+      setShowModal(false);
 
-    console.log("FINAL DATA:", {
-      shopName,
-      shopBio,
-      whatsapp: formValues.whatsapp,
-    });
+      const response = await createStore({
+        name: shopName,
+        description: shopBio,
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+        // Dummy values for now
+        tagline: "Your favourite online store",
+        logo: null,
+        phone: formValues.whatsapp,
+        email: "store@shelfie.app",
+        address: "Benin City, Edo State, Nigeria",
 
-    router.push("/setup-shop/step-2/shop-ready");
+        // Real values
+        whatsapp_number: formValues.whatsapp,
+        phone_no: formValues.whatsapp,
+        currency: formValues.currency.currency,
+      }).unwrap();
+
+      console.log("Store created:", response);
+
+      router.replace("/setup-shop/step-2/shop-ready");
+    } catch (error: any) {
+      console.error("Create store failed:", error);
+    }
   }
 
   useEffect(() => {
@@ -78,7 +100,13 @@ export default function SetupShopStep2Page() {
           <StepIndicator currentStep={2} />
 
           <Formik
-            initialValues={{ whatsapp: whatsapp || "" }}
+            initialValues={{
+              whatsapp: whatsapp || "",
+              currency: {
+                currency: "NGN",
+                amount: "",
+              },
+            }}
             enableReinitialize
             validationSchema={whatsappSchema}
             onSubmit={handleSubmit}
@@ -91,8 +119,14 @@ export default function SetupShopStep2Page() {
                 />
 
                 {/* ❌ REMOVE value/onChange props */}
-                <WhatsAppField />
-
+                <div>
+                  <WhatsAppField />
+                  <CustomAmountInput
+                    name="currency"
+                    label="Currency"
+                    mode="currency"
+                  />
+                </div>
                 <FormActions isSubmitting={isSubmitting} />
 
                 <Modal

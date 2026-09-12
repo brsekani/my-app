@@ -3,6 +3,8 @@ import { useFormik, FormikHelpers } from "formik";
 import Link from "next/link";
 import { basicSchema } from "../schemas";
 import { useRouter } from "next/navigation";
+import { useRegisterCustomerMutation } from "@/redux/api/authApi";
+import { showToast } from "@/lib/toast";
 
 interface SignupValues {
   firstName: string;
@@ -14,19 +16,49 @@ interface SignupValues {
 
 export default function SignupForm() {
   const router = useRouter();
+  const [registerCustomer, { isLoading }] = useRegisterCustomerMutation();
 
   const onSubmit = async (
     values: SignupValues,
     actions: FormikHelpers<SignupValues>,
   ) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await registerCustomer({
+        first_name: values.firstName,
+        last_name: values.lastName,
+        email: values.email,
+        password: values.password,
+        password_confirmation: values.confirmPassword,
+      }).unwrap();
 
-    console.log("Signup values:", values);
+      console.log("Registration response:", response);
 
-    actions.resetForm();
-    router.push(
-      "/create-account/verify-email?email=" + encodeURIComponent(values.email),
-    );
+      actions.resetForm();
+      showToast.success(response?.message);
+
+      router.push(
+        `/create-account/verify-email?email=${encodeURIComponent(values.email)}`,
+      );
+    } catch (error: any) {
+      console.log(error);
+      console.error("Registration failed:", error);
+
+      const backendErrors = error?.data?.errors;
+
+      if (backendErrors?.email?.[0]) {
+        actions.setFieldError("email", backendErrors.email[0]);
+      }
+
+      if (backendErrors?.password?.[0]) {
+        actions.setFieldError("password", backendErrors.password[0]);
+      }
+
+      actions.setStatus(
+        error?.data?.message ?? "Unable to create your account.",
+      );
+    } finally {
+      actions.setSubmitting(false);
+    }
   };
 
   const {
@@ -64,9 +96,11 @@ export default function SignupForm() {
             value={values.firstName}
             onChange={handleChange}
             id="firstName"
+            name="firstName"
             type="text"
             placeholder="Enter your first name"
             onBlur={handleBlur}
+            maxLength={25}
             className={`h-[45px] w-full bg-[#F5F5F5] rounded-sm px-[14px] text-[14px] text-[#111111] placeholder:text-[#6B6B6B] outline-none border transition-all duration-200
   ${
     errors.firstName && touched.firstName
@@ -88,11 +122,13 @@ export default function SignupForm() {
         <div className="space-y-0.5">
           <input
             id="lastName"
+            name="lastName"
             value={values.lastName}
             onChange={handleChange}
             type="text"
             placeholder="Enter your last name"
             onBlur={handleBlur}
+            maxLength={25}
             className={`h-[45px] w-full bg-[#F5F5F5] rounded-sm px-[14px] text-[14px] text-[#111111] placeholder:text-[#6B6B6B] outline-none border transition-all duration-200
   ${
     errors.lastName && touched.lastName
@@ -140,6 +176,7 @@ export default function SignupForm() {
         <div className="space-y-0.5">
           <input
             id="password"
+            name="password"
             type="password"
             value={values.password}
             onChange={handleChange}
@@ -166,6 +203,7 @@ export default function SignupForm() {
         <div className="space-y-1">
           <input
             id="confirmPassword"
+            name="confirmPassword"
             type="password"
             value={values.confirmPassword}
             onChange={handleChange}

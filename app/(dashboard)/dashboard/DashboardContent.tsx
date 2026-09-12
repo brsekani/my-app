@@ -9,7 +9,7 @@ import EmptyState from "@/components/EmptyState";
 import copy from "@/assets/svgs/copy.svg";
 import share from "@/assets/svgs/share.svg";
 import close from "@/assets/svgs/close.svg";
-import search from "@/assets/svgs/search.svg";
+import searchImg from "@/assets/svgs/search.svg";
 import PaginationNavigator from "@/components/PaginationNavigator";
 import Drawer from "@/components/Drawer";
 import AddProductDrawer from "@/components/AddProductDrawer";
@@ -17,6 +17,11 @@ import testImage from "@/assets/Images/test-image.jpg";
 import nothingHere from "@/assets/svgs/nothing-here.svg";
 import matchNotFound from "@/assets/svgs/match-not-found.svg";
 import Link from "next/link";
+import { useGetProductsQuery } from "@/redux/api/productApi";
+import { getImageUrl } from "@/lib/get-image-url";
+import ProductCardSkeleton from "@/components/skeletons/ProductCardSkeleton";
+import { shareLink } from "@/lib/share";
+import ShareSheet from "@/components/ShareSheet";
 
 export default function DashboardContent() {
   const router = useRouter();
@@ -27,6 +32,17 @@ export default function DashboardContent() {
   const [isCopied, setIsCopied] = useState(false);
   const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
   const [openAddProductDrawer, setOpenAddProductDrawer] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+
+  const page = Number(searchParams.get("page") ?? 1);
+  const perPage = Number(searchParams.get("per_page") ?? 10);
+  const search = searchParams.get("q") ?? "";
+
+  const { data, isLoading, isFetching } = useGetProductsQuery({
+    page: page,
+    per_page: perPage,
+    search,
+  });
 
   const handleCopy = async () => {
     try {
@@ -59,59 +75,61 @@ export default function DashboardContent() {
     router.push("?"); // Clears the query from the URL
   };
 
-  const products = [
-    {
-      id: 1,
-      name: "Classic Blue Denim Jacket",
-      price: "₦28,000",
-      description:
-        "Timeless blue denim jacket made from durable cotton fabric with a comfortable inner lining.",
-      image: testImage,
-    },
-    {
-      id: 2,
-      name: "Minimalist Leather Backpack",
-      price: "₦42,500",
-      description:
-        "Premium leather backpack with spacious compartments, padded straps, and laptop sleeve.",
-      image: testImage,
-    },
-    {
-      id: 3,
-      name: "Wireless Noise Cancelling Headphones",
-      price: "₦85,000",
-      description:
-        "Immersive sound experience with active noise cancellation and 30-hour battery life.",
-      image: testImage,
-    },
-    {
-      id: 4,
-      name: "Smart Fitness Watch",
-      price: "₦65,000",
-      description:
-        "Track workouts, heart rate, sleep, and notifications with this sleek fitness smartwatch.",
-      image: testImage,
-    },
-    {
-      id: 5,
-      name: "Luxury Office Chair",
-      price: "₦120,000",
-      description:
-        "Ergonomic office chair with lumbar support, adjustable height, and breathable mesh.",
-      image: testImage,
-    },
-    {
-      id: 6,
-      name: "Portable Bluetooth Speaker",
-      price: "₦24,999",
-      description:
-        "Compact speaker with deep bass, waterproof design, and up to 12 hours playback.",
-      image: testImage,
-    },
-  ];
+  const products = data?.data?.products;
+
+  // const products = [
+  //   {
+  //     id: 1,
+  //     name: "Classic Blue Denim Jacket",
+  //     price: "₦28,000",
+  //     description:
+  //       "Timeless blue denim jacket made from durable cotton fabric with a comfortable inner lining.",
+  //     image: testImage,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Minimalist Leather Backpack",
+  //     price: "₦42,500",
+  //     description:
+  //       "Premium leather backpack with spacious compartments, padded straps, and laptop sleeve.",
+  //     image: testImage,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Wireless Noise Cancelling Headphones",
+  //     price: "₦85,000",
+  //     description:
+  //       "Immersive sound experience with active noise cancellation and 30-hour battery life.",
+  //     image: testImage,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Smart Fitness Watch",
+  //     price: "₦65,000",
+  //     description:
+  //       "Track workouts, heart rate, sleep, and notifications with this sleek fitness smartwatch.",
+  //     image: testImage,
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Luxury Office Chair",
+  //     price: "₦120,000",
+  //     description:
+  //       "Ergonomic office chair with lumbar support, adjustable height, and breathable mesh.",
+  //     image: testImage,
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Portable Bluetooth Speaker",
+  //     price: "₦24,999",
+  //     description:
+  //       "Compact speaker with deep bass, waterproof design, and up to 12 hours playback.",
+  //     image: testImage,
+  //   },
+  // ];
 
   const hasSearch = searchValue.trim().length > 0;
-  const hasProducts = products.length > 0;
+  const hasProducts = products?.length > 0;
 
   const handleCloseAddProduct = () => {
     router.push("/dashboard");
@@ -122,7 +140,7 @@ export default function DashboardContent() {
     setOpenAddProductDrawer(shouldOpen);
   }, [searchParams]);
 
-  console.log(openAddProductDrawer);
+  console.log(data);
 
   return (
     <div className="leading-[100%] space-y-6">
@@ -149,7 +167,9 @@ export default function DashboardContent() {
               <Image src={copy} alt="copy-icon" />
             </button>
 
-            <Image src={share} alt="share-icon" />
+            <button onClick={() => setShareOpen(true)}>
+              <Image src={share} alt="share" />
+            </button>
           </div>
         </div>
       </div>
@@ -159,7 +179,7 @@ export default function DashboardContent() {
       <form onSubmit={handleSearchSubmit} className="relative w-full">
         <Image
           className="absolute top-2.25 left-2"
-          src={search}
+          src={searchImg}
           alt="search-icon"
         />
         {searchValue.length > 0 && (
@@ -191,14 +211,20 @@ export default function DashboardContent() {
           </button>
         </div>
 
-        {searchValue && (
+        {searchValue.trim() && !isLoading && !isFetching && (
           <p className="text-[14px] text-[#111111]">
-            Results for "{searchValue}"
+            Results for <span className="font-semibold">"{searchValue}"</span>
           </p>
         )}
       </div>
 
-      {hasProducts ? (
+      {isLoading || isFetching ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 xl:grid-cols-5 gap-[18px] md:gap-4">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))}
+        </div>
+      ) : hasProducts ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 xl:grid-cols-5 gap-[18px] md:gap-4">
           {products.map((product) => (
             <Link
@@ -208,7 +234,8 @@ export default function DashboardContent() {
             >
               <div className="relative w-full h-[235px] overflow-hidden rounded-[4px] border border-[#E5E5E5]">
                 <Image
-                  src={product.image}
+                  src={getImageUrl(product.photo)}
+                  // src={product?.photo}
                   alt={product.name}
                   fill
                   className="object-cover"
@@ -255,7 +282,10 @@ export default function DashboardContent() {
           />
         </div>
       )}
-      <PaginationNavigator totalPages={10} loading={false} />
+      <PaginationNavigator
+        pagination={data?.data.pagination}
+        loading={isLoading || isFetching}
+      />
 
       <Drawer
         open={openAddProductDrawer}
@@ -266,6 +296,14 @@ export default function DashboardContent() {
       >
         <AddProductDrawer onClose={handleCloseAddProduct} />
       </Drawer>
+
+      <ShareSheet
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        title="Wireless Headphones"
+        text="Check out these amazing wireless headphones on Shelfie."
+        url="https://unsplash.com/photos/WLUHO9A_xik"
+      />
     </div>
   );
 }

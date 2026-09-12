@@ -102,7 +102,7 @@ export default function KeyBenefits() {
       ref={sectionRef}
       className="py-16 md:py-24 px-5 overflow-hidden w-full"
     >
-      <div className="max-w-[1440px] mx-auto w-full">
+      <div className="max-w-360 mx-auto w-full">
         {/* Heading */}
         <div className="text-center">
           <h2 className="benefits-heading text-[#111111] text-[28px] md:text-[40px] leading-[100%] max-w-[886px] mx-auto px-5 lg:px-0">

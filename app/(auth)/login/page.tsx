@@ -8,10 +8,15 @@ import Image from "next/image";
 import { useFormik } from "formik";
 import { loginSchema } from "@/schemas";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLoginCustomerMutation } from "@/redux/api/authApi";
+import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/toast";
 
 export default function Page() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [loginCustomer, { isLoading }] = useLoginCustomerMutation();
 
   const {
     values,
@@ -27,8 +32,48 @@ export default function Page() {
       password: "",
     },
     validationSchema: loginSchema,
-    onSubmit: async (values) => {
-      console.log(values);
+    onSubmit: async (values, actions) => {
+      try {
+        const response = await loginCustomer({
+          email: values.email,
+          password: values.password,
+        }).unwrap();
+
+        console.log("Login successful:", response);
+        showToast.success(response?.data?.message || "Login successful");
+
+        actions.resetForm();
+
+        router.push("/dashboard");
+      } catch (error: any) {
+        console.error("Login failed:", error);
+        showToast.error(error?.data?.message || "Login error");
+
+        // if (error?.status === 401) {
+        //   actions.setFieldError("email", "Invalid email or password.");
+        //   actions.setFieldError("password", "Invalid email or password.");
+        // }
+
+        // if (error?.status === 423) {
+        //   actions.setStatus(
+        //     "Your account has been locked. Please try again in one hour.",
+        //   );
+        // }
+
+        // if (error?.data?.errors) {
+        //   Object.entries(error.data.errors).forEach(([field, messages]) => {
+        //     actions.setFieldError(field, (messages as string[])[0]);
+        //   });
+        // }
+
+        // if (!error?.status) {
+        //   actions.setStatus(
+        //     "Unable to connect to the server. Please try again.",
+        //   );
+        // }
+      } finally {
+        actions.setSubmitting(false);
+      }
     },
   });
 
@@ -158,7 +203,7 @@ export default function Page() {
             <p className="text-center text-[14px] text-[#777777]">
               Don’t have an account?{" "}
               <Link
-                href="/login"
+                href="/create-account"
                 className="font-semibold hover:underline text-[#111111]"
               >
                 Create Account

@@ -67,7 +67,7 @@ export default function StorefrontShowcase() {
   return (
     <section ref={sectionRef} className="py-5 px-5 leading-[100%]">
       <div
-        className="max-w-[1440px] mx-auto overflow-hidden rounded-[8px] bg-cover bg-center bg-no-repeat"
+        className="max-w-360 mx-auto overflow-hidden rounded-[8px] bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/lamp-bg.png')" }}
       >
         <div className="grid lg:grid-cols-2 md:gap-10 gap-2.5 items-end min-h-[612px] px-6 lg:px-16 py-6 md:py-0">

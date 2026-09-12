@@ -70,7 +70,7 @@ export default function GlobalSection() {
       <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_right,#EDEDED_1px,transparent_1px),linear-gradient(to_bottom,#EDEDED_1px,transparent_1px)] bg-[size:112px_153px]" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-[1440px] mx-auto px-5 md:px-[60px] grid grid-cols-1 md:grid-cols-3 md:gap-10.5 gap-11">
+      <div className="relative z-10 max-w-360 mx-auto px-5 md:px-[60px] grid grid-cols-1 md:grid-cols-3 md:gap-10.5 gap-11">
         <div className="flex items-start flex-col gap-4 md:justify-between">
           <p className="global-small-text text-[12px] md:text-[14px] text-[#777777] uppercase leading-[100%]">
             NO LOCATION RESTRICTIONS. NO SPECIAL SETUP.

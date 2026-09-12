@@ -173,7 +173,7 @@ export default function Page() {
       <main className="flex-1">
         {/* Header */}
         <header>
-          <div className="mx-auto w-full max-w-[1440px]">
+          <div className="mx-auto w-full max-w-360">
             <section className="space-y-4 px-5 py-6">
               <div className="space-y-2.5">
                 <h1
@@ -197,7 +197,7 @@ export default function Page() {
         </header>
 
         {/* Main content */}
-        <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col">
+        <div className="mx-auto flex w-full max-w-360 flex-1 flex-col">
           <section className="flex-1 space-y-7 px-5 py-7">
             {/* Search */}
             <form className="relative w-full" onSubmit={handleSearchSubmit}>
@@ -295,7 +295,7 @@ export default function Page() {
 
       {/* Footer */}
       <footer className="border-t border-[#E5E5E5]">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-4 px-5 py-6 sm:flex-row">
+        <div className="mx-auto flex w-full max-w-360 flex-col items-center justify-between gap-4 px-5 py-6 sm:flex-row">
           <p className="text-[14px] text-[#777777]">
             Powered by NAME OF PRODUCT
           </p>

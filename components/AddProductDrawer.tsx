@@ -14,12 +14,14 @@ import CustomAmountInput from "@/components/CustomAmountInput";
 import Link from "next/link";
 import { productSchema } from "@/schemas";
 import { useRouter } from "next/navigation";
+import { useCreateProductMutation } from "@/redux/api/productApi";
 
 type AddProductDrawerProps = {
   onClose: () => void;
 };
 
 export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
+  const [createProduct, { isLoading }] = useCreateProductMutation();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
@@ -36,11 +38,47 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
 
     validationSchema: productSchema,
 
-    onSubmit: (values) => {
-      console.log("FORM DATA:", values);
-      onClose();
+    onSubmit: async (values) => {
+      try {
+        const formData = new FormData();
 
-      //   router.push("/products/add-product/success");
+        formData.append("name", values.productName);
+        formData.append("description", values.description);
+        formData.append(
+          "price",
+          String(Number(values.price.amount.replace(/,/g, ""))),
+        );
+
+        formData.append("compare_at_price", "0");
+        formData.append("stock_quantity", "100");
+        formData.append("quantity", "100");
+        formData.append("currency", values.price.currency);
+        formData.append("status", "DRAFT");
+
+        // Category IDs
+        // formData.append(
+        //   "category_ids[]",
+        //   "01953801-abcd-1234-5678-1234567890ab",
+        // );
+
+        // Main image
+        if (values.images.length > 0) {
+          formData.append("photo", values.images[0]);
+        }
+
+        // Additional images
+        values.images.forEach((file) => {
+          formData.append("photos[]", file);
+        });
+
+        const response = await createProduct(formData).unwrap();
+
+        console.log(response);
+
+        onClose();
+      } catch (error) {
+        console.error(error);
+      }
     },
   });
 
@@ -201,7 +239,12 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
             </div>
 
             {/* PRICE */}
-            <CustomAmountInput name="price" label="Price" disabled={false} />
+            <CustomAmountInput
+              name="price"
+              label="Price"
+              disabled={false}
+              mode={"amount"}
+            />
 
             {/* DESCRIPTION */}
             <div className="flex flex-col gap-2">
@@ -238,6 +281,7 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
             <button
               type="button"
               onClick={onClose}
+              disabled={isLoading}
               className="px-8.5 py-2.5 rounded-full border border-[#111111] text-[14px] font-semibold text-[#111111] hover:bg-gray-50 transition-colors"
             >
               Cancel
@@ -248,7 +292,7 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
               form="add-product-form"
               className="px-8.5 py-2.5 rounded-full bg-[#7ed957] hover:bg-[#5fc23e] text-[14px] text-[#111111] font-semibold transition-colors"
             >
-              Add Product
+              {isLoading ? "Adding Product..." : "Add Product"}
             </button>
           </div>
         </div>
