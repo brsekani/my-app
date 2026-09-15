@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  // TEMPORARY: Allow dashboard access while backend is down.
+  // Remove this before deploying to production.
+  const DESIGN_MODE = true;
+
+  if (
+    DESIGN_MODE &&
+    (pathname.startsWith("/dashboard") ||
+      pathname.startsWith("/products") ||
+      pathname.startsWith("/settings"))
+  ) {
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get("shelfie_access_token")?.value;
   const emailVerified =
     request.cookies.get("shelfie_email_verified")?.value === "true";
-
-  const { pathname } = request.nextUrl;
 
   const isAuthenticated = Boolean(token);
 

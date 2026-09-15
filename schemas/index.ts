@@ -68,6 +68,22 @@ export const productSchema = Yup.object({
 
   description: Yup.string().trim().required("Description is required"),
 
+  stockQuantity: Yup.string().when("unlimitedStock", {
+    is: false,
+    then: (schema) =>
+      schema
+        .required("Stock quantity is required")
+        .matches(/^[1-9][0-9]*$/, "Enter a valid quantity")
+        .test(
+          "positive",
+          "Stock quantity must be at least 1",
+          (value) => Number(value) >= 1,
+        ),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  unlimitedStock: Yup.boolean().required(),
+
   price: Yup.object({
     currency: Yup.string().required("Currency is required"),
 

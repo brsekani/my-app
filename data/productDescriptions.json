@@ -1,0 +1,546 @@
+{
+  "default": [
+    "Discover {name}, a practical choice made for everyday use. Designed to combine quality, convenience, and great value.",
+    "Make a smart addition to your collection with {name}. A versatile option suited to everyday needs and different occasions.",
+    "Bring more convenience to your everyday routine with {name}. Simple, useful, and designed to fit naturally into your lifestyle.",
+    "Looking for something reliable and stylish? {name} is a versatile choice made for everyday use.",
+    "Upgrade your everyday essentials with {name}. A practical product that brings together function, quality, and style.",
+    "Enjoy the convenience of {name}, thoughtfully suited for everyday use and easy to incorporate into your routine.",
+    "Choose {name} when you want a balance of practicality, quality, and everyday appeal.",
+    "Add {name} to your essentials for a simple and useful solution designed around everyday needs."
+  ],
+  "fashion": [
+    "Refresh your wardrobe with {name}, a stylish choice designed for comfortable everyday wear and easy outfit pairing.",
+    "Step into effortless style with {name}. A versatile piece that works beautifully for casual days and everyday outings.",
+    "Make {name} part of your everyday style. Easy to wear, easy to pair, and designed to keep your look polished.",
+    "Give your wardrobe a fresh update with {name}, combining everyday comfort with a clean and stylish look.",
+    "Keep your style effortless with {name}. A versatile addition for creating comfortable and confident everyday outfits.",
+    "Designed for modern everyday style, {name} is an easy choice for dressing up or keeping things casual.",
+    "Add a stylish touch to your wardrobe with {name}, made for comfort, versatility, and everyday confidence.",
+    "From casual outings to relaxed occasions, {name} gives you an easy way to complete your look.",
+    "Stay comfortable without compromising your style with {name}, a versatile piece for your everyday wardrobe.",
+    "Make every outfit feel more complete with {name}, a simple and stylish addition to your collection."
+  ],
+  "shoes": [
+    "Step out confidently in {name}, designed to bring together everyday comfort and effortless style.",
+    "Keep your feet comfortable while completing your look with {name}, a versatile choice for everyday wear.",
+    "Take on your day in {name}, a stylish option suited for casual outings, everyday activities, and more.",
+    "Add {name} to your rotation for a comfortable and versatile footwear option that works across different looks.",
+    "Move comfortably and look good doing it with {name}, a practical addition to your everyday wardrobe.",
+    "Whether you're heading out casually or running daily errands, {name} is designed to complement your everyday lifestyle.",
+    "Complete your outfit with {name}, bringing a clean, modern feel to your everyday footwear collection.",
+    "Enjoy a balance of comfort and style with {name}, suitable for everyday use and casual occasions."
+  ],
+  "bags": [
+    "Carry your essentials with ease using {name}, combining everyday practicality with a stylish finish.",
+    "Stay organised on the go with {name}, a versatile bag designed for everyday essentials and daily outings.",
+    "Add function and style to your routine with {name}, an easy choice for carrying the things you need.",
+    "Take your essentials wherever you go with {name}, designed for convenient everyday use.",
+    "Keep your everyday items together in style with {name}, a practical addition to your collection.",
+    "From daily errands to casual outings, {name} offers a convenient way to carry your essentials while keeping your look polished.",
+    "Make everyday carrying easier with {name}, a versatile option designed around convenience and style.",
+    "Give your everyday look a functional upgrade with {name}, perfect for keeping essentials close and organised."
+  ],
+  "beauty": [
+    "Add {name} to your beauty routine for a simple way to care for yourself and feel your best every day.",
+    "Make {name} part of your everyday self-care routine. Convenient, versatile, and easy to incorporate into your beauty essentials.",
+    "Treat yourself to {name}, a beauty essential designed to complement your everyday routine.",
+    "Upgrade your beauty collection with {name}, made for convenient everyday use and a polished self-care routine.",
+    "Discover {name}, an easy addition to your personal care routine when you want to look and feel your best.",
+    "Bring a little more care to your daily routine with {name}, a practical beauty essential for everyday use.",
+    "Keep your beauty routine simple with {name}, a versatile addition to your personal care collection.",
+    "Enjoy a more complete self-care routine with {name}, designed for convenient and enjoyable everyday use."
+  ],
+  "skincare": [
+    "Make {name} part of your everyday skincare routine. A convenient addition for keeping your skin-care routine simple and consistent.",
+    "Give your skincare routine a fresh addition with {name}, designed for easy everyday use.",
+    "Add {name} to your daily self-care routine for a simple, convenient skincare experience.",
+    "Keep your skincare routine feeling fresh and organised with {name}, an easy addition to your everyday essentials.",
+    "Discover {name}, a practical skincare choice designed to fit naturally into your daily routine.",
+    "Take a little more time for yourself with {name}, an easy addition to a consistent everyday skincare routine.",
+    "Make everyday skincare more convenient with {name}, designed to complement your personal care essentials.",
+    "Add a thoughtful touch to your routine with {name}, a simple skincare essential for everyday use."
+  ],
+  "hair": [
+    "Refresh your hair-care routine with {name}, designed to make everyday hair care simple and convenient.",
+    "Make {name} part of your daily hair routine for an easy and practical way to care for your hair.",
+    "Give your hair-care collection an upgrade with {name}, a convenient choice for everyday use.",
+    "Keep your routine simple with {name}, an easy-to-use hair-care essential for everyday maintenance.",
+    "Discover {name}, a practical addition to your hair-care routine designed for convenient everyday use.",
+    "Add {name} to your beauty essentials for a simple way to keep your everyday hair routine organised.",
+    "Make everyday hair care easier with {name}, a versatile addition to your personal-care collection.",
+    "Keep your hair-care routine feeling fresh with {name}, designed to fit naturally into your everyday essentials."
+  ],
+  "electronics": [
+    "Upgrade your everyday setup with {name}, designed to make your daily tech experience more convenient and enjoyable.",
+    "Stay connected and get more done with {name}, a practical addition to your everyday technology setup.",
+    "Bring more convenience to your digital routine with {name}, made for everyday use at home, work, or on the go.",
+    "Discover {name}, a useful tech essential designed to fit seamlessly into your everyday routine.",
+    "Make everyday tasks easier with {name}, combining practical functionality with a modern tech-focused design.",
+    "Add {name} to your setup for a convenient solution to everyday technology needs.",
+    "Whether you're working, relaxing, or staying connected, {name} is a versatile addition to your everyday tech collection.",
+    "Upgrade your essentials with {name}, a practical choice for modern everyday use."
+  ],
+  "phones": [
+    "Stay connected with {name}, designed to support your everyday communication, entertainment, and mobile needs.",
+    "Make more of your everyday mobile experience with {name}, a versatile choice for staying connected and getting things done.",
+    "Take your everyday digital experience further with {name}, suited for communication, entertainment, and daily tasks.",
+    "Keep up with your day using {name}, a practical mobile choice for staying connected wherever you go.",
+    "Discover {name}, designed to bring convenience, connectivity, and everyday functionality together.",
+    "From communication to entertainment, {name} is built around the things you do every day on your mobile device.",
+    "Upgrade your everyday mobile setup with {name}, a convenient choice for modern connected living.",
+    "Stay productive and entertained with {name}, a versatile option for everyday mobile use."
+  ],
+  "accessories": [
+    "Complete your everyday setup with {name}, a practical accessory designed to add convenience and style.",
+    "Add {name} to your essentials for a simple way to complement your everyday setup.",
+    "Small details can make a big difference. {name} is a practical addition designed for everyday convenience.",
+    "Upgrade your everyday essentials with {name}, combining useful functionality with a clean and stylish feel.",
+    "Make your everyday setup more complete with {name}, a versatile accessory suited to different occasions.",
+    "Keep your essentials looking and working their best with {name}, a convenient addition to your collection.",
+    "Add a useful finishing touch to your everyday routine with {name}.",
+    "Designed for everyday convenience, {name} is an easy addition to your personal collection."
+  ],
+  "home": [
+    "Make your space feel more comfortable with {name}, a practical addition designed for everyday living.",
+    "Bring convenience and style into your home with {name}, an easy addition to your everyday space.",
+    "Give your home a simple upgrade with {name}, designed to add practicality while complementing your space.",
+    "Add a thoughtful touch to your home with {name}, a versatile choice for everyday living.",
+    "Make everyday living a little easier with {name}, combining useful functionality with a clean look.",
+    "Refresh your space with {name}, a practical home essential designed for everyday use.",
+    "Bring more comfort and convenience to your space with {name}, suited to modern everyday living.",
+    "Add {name} to your home for a simple, useful upgrade that fits naturally into your space."
+  ],
+  "kitchen": [
+    "Make everyday cooking easier with {name}, a practical kitchen essential designed for convenient use.",
+    "Add {name} to your kitchen setup for a simple combination of convenience and everyday functionality.",
+    "Prepare meals with greater ease using {name}, a useful addition to your everyday kitchen essentials.",
+    "Upgrade your kitchen routine with {name}, designed to make everyday preparation more convenient.",
+    "Bring more convenience to your kitchen with {name}, a practical choice for everyday cooking and preparation.",
+    "Keep your kitchen better equipped with {name}, a versatile essential for everyday use.",
+    "Discover {name}, a handy kitchen addition designed to make everyday tasks simpler.",
+    "Add a useful touch to your kitchen with {name}, made for convenient everyday cooking and preparation."
+  ],
+  "food": [
+    "Enjoy the delicious taste of {name}, made for satisfying cravings and sharing memorable moments.",
+    "Treat yourself to {name}, a tasty choice for enjoying at home, on the go, or with friends and family.",
+    "Satisfy your cravings with {name}, a delicious option made for everyday enjoyment.",
+    "Bring something delicious to your day with {name}, perfect for a quick treat or a shared moment.",
+    "Enjoy {name} whenever you're ready for something tasty, satisfying, and easy to enjoy.",
+    "Make snack time more enjoyable with {name}, a delicious choice for everyday cravings.",
+    "Share good moments over {name}, a tasty addition to meals, gatherings, or simple everyday treats.",
+    "Give yourself something to look forward to with {name}, a delicious choice for any time of day."
+  ],
+  "drinks": [
+    "Refresh yourself with {name}, a great choice for enjoying a flavorful drink whenever you need it.",
+    "Enjoy {name}, a refreshing option for relaxing, sharing, or adding something special to your day.",
+    "Make every sip enjoyable with {name}, perfect for everyday refreshment and social occasions.",
+    "Discover the refreshing taste of {name}, a simple choice for staying refreshed throughout the day.",
+    "Serve up something refreshing with {name}, suitable for everyday enjoyment and special moments.",
+    "Enjoy {name} chilled, shared, or simply whenever you want a refreshing drink.",
+    "Add {name} to your drinks collection for an easy and enjoyable refreshment option.",
+    "Refresh your day with {name}, made for enjoyable moments at home, work, or on the go."
+  ],
+  "sports": [
+    "Stay active with {name}, a practical choice for workouts, training, recreation, and everyday movement.",
+    "Take your active routine further with {name}, designed to support comfortable and enjoyable activity.",
+    "Add {name} to your fitness essentials for a convenient option during workouts and active days.",
+    "Keep moving with {name}, a versatile addition to your sports and fitness collection.",
+    "Whether you're training or staying active for fun, {name} is a practical choice for your routine.",
+    "Make active days easier with {name}, designed to complement your workout and sports essentials.",
+    "Gear up for your next activity with {name}, a useful addition for fitness, training, and recreation.",
+    "Bring more convenience to your active lifestyle with {name}, suited for everyday workouts and activities."
+  ],
+  "baby": [
+    "Make everyday moments easier with {name}, a practical choice for parents and little ones.",
+    "Add {name} to your baby's essentials for a convenient and useful everyday solution.",
+    "Designed with everyday family life in mind, {name} is a practical addition to your baby essentials.",
+    "Make caring for your little one a little more convenient with {name}, suited to everyday needs.",
+    "Discover {name}, a useful addition to your baby's everyday essentials and routines.",
+    "Keep your baby's essentials well prepared with {name}, a practical choice for everyday use.",
+    "Add comfort and convenience to your everyday routine with {name}, designed with little ones in mind.",
+    "Make everyday parenting moments simpler with {name}, a practical essential for your little one's routine."
+  ],
+  "kids": [
+    "Bring more fun to everyday moments with {name}, a playful and practical choice for kids.",
+    "Make playtime more enjoyable with {name}, a fun addition to any child's collection.",
+    "Discover {name}, designed to add fun, creativity, and enjoyment to everyday play.",
+    "Give kids something exciting to enjoy with {name}, a great choice for playtime and everyday entertainment.",
+    "Add {name} to their collection for more fun, creativity, and memorable moments.",
+    "Keep little ones entertained with {name}, a fun choice for playtime, learning, and discovery.",
+    "Make everyday play more exciting with {name}, a thoughtful choice for young explorers.",
+    "Bring a little more fun into their day with {name}, perfect for playtime and enjoyable moments."
+  ],
+  "office": [
+    "Stay organised and productive with {name}, a practical addition to your everyday workspace.",
+    "Make your workday easier with {name}, designed for convenient everyday use at home, school, or the office.",
+    "Upgrade your workspace with {name}, a useful essential designed to support your everyday tasks.",
+    "Keep your workspace prepared with {name}, a simple and practical choice for everyday productivity.",
+    "Add {name} to your office essentials for a more convenient and organised work routine.",
+    "Designed for everyday productivity, {name} is a useful addition to any home, school, or professional workspace.",
+    "Bring more organisation to your workday with {name}, a practical everyday office essential.",
+    "Make everyday tasks more convenient with {name}, designed to fit naturally into your workspace."
+  ],
+  "automotive": [
+    "Keep your vehicle ready for the road with {name}, a practical addition to your automotive essentials.",
+    "Upgrade your vehicle setup with {name}, designed to bring everyday convenience and functionality to your driving experience.",
+    "Make vehicle care easier with {name}, a useful choice for everyday maintenance and driving needs.",
+    "Add {name} to your automotive essentials for a practical solution to everyday vehicle needs.",
+    "Designed for drivers who value convenience, {name} is a useful addition to your vehicle setup.",
+    "Keep your car better prepared with {name}, a practical choice for everyday driving and vehicle care.",
+    "Bring more convenience to your driving routine with {name}, suited to everyday automotive needs.",
+    "Give your vehicle setup a useful upgrade with {name}, designed for practical everyday use."
+  ],
+  "jewelry": [
+    "Add an elegant finishing touch to your look with {name}, designed to complement both everyday and special outfits.",
+    "Make your style shine with {name}, a versatile piece that adds a refined touch to any look.",
+    "Complete your outfit with {name}, bringing a simple and elegant accent to your personal style.",
+    "Discover the timeless appeal of {name}, an easy choice for adding a little extra character to your look.",
+    "Elevate your everyday style with {name}, a beautiful addition for casual moments and special occasions.",
+    "Add a touch of elegance to your collection with {name}, designed to complement a variety of styles.",
+    "Make every look feel more complete with {name}, a stylish piece for everyday wear or special moments.",
+    "Give your accessories collection a refined upgrade with {name}, made to add an elegant finishing touch."
+  ],
+  "furniture": [
+    "Refresh your space with {name}, designed to bring comfort, function, and style into your home.",
+    "Create a more comfortable space with {name}, a practical furniture choice for modern everyday living.",
+    "Give your room a fresh look with {name}, combining everyday functionality with a stylish presence.",
+    "Add {name} to your space for a simple way to improve comfort and everyday functionality.",
+    "Bring more character to your home with {name}, a versatile piece suited to modern interiors.",
+    "Designed for comfortable everyday living, {name} is a practical addition to your home.",
+    "Upgrade your space with {name}, bringing together useful function and an inviting look.",
+    "Make your home feel more complete with {name}, a versatile furniture addition for everyday living."
+  ],
+  "pets": [
+    "Take better care of your pet with {name}, a practical addition to their everyday essentials.",
+    "Make your pet's routine more comfortable with {name}, designed for convenient everyday use.",
+    "Add {name} to your pet-care essentials for a useful and practical everyday solution.",
+    "Give your pet something they'll enjoy with {name}, a thoughtful addition to their everyday routine.",
+    "Make everyday pet care easier with {name}, a convenient choice for caring for your furry companion.",
+    "Keep your pet's essentials ready with {name}, a practical addition to their everyday needs.",
+    "Bring more comfort and convenience to your pet's routine with {name}.",
+    "Discover {name}, a useful pet essential designed to fit naturally into everyday care."
+  ],
+  "tools": [
+    "Get the job done with {name}, a practical tool designed to support everyday tasks and projects.",
+    "Add {name} to your toolkit for a reliable and useful option for everyday work and repairs.",
+    "Make your next project easier with {name}, a practical addition to any toolkit.",
+    "Keep your toolkit ready with {name}, suited for everyday tasks, maintenance, and DIY projects.",
+    "Designed for practical work, {name} is a useful addition to your collection of everyday tools.",
+    "Take on everyday repairs and projects with {name}, a convenient tool to have within reach.",
+    "Upgrade your toolkit with {name}, a practical choice for home projects and everyday maintenance.",
+    "Make everyday jobs more manageable with {name}, designed to be a useful addition to your toolkit."
+  ],
+  "watches": [
+    "Complete your look with {name}, a stylish timepiece designed for everyday wear.",
+    "Add a refined touch to your wrist with {name}, a versatile choice for everyday and special occasions.",
+    "Keep your style on time with {name}, combining everyday practicality with a polished look.",
+    "Discover {name}, an easy accessory for adding character and sophistication to your everyday outfits."
+  ],
+  "eyewear": [
+    "Complete your everyday look with {name}, a stylish eyewear choice designed for versatile wear.",
+    "Add a polished finishing touch with {name}, perfect for everyday style and easy outfit pairing.",
+    "Make {name} part of your everyday essentials for a stylish and practical accessory.",
+    "Refresh your look with {name}, a versatile choice for everyday outings and casual occasions."
+  ],
+  "bags_luggage": [
+    "Travel and move with ease using {name}, designed to keep your essentials organised wherever you go.",
+    "Make every journey more convenient with {name}, a practical choice for travel and everyday carrying.",
+    "Pack your essentials with confidence using {name}, combining convenience, space, and everyday practicality.",
+    "Take {name} wherever the day takes you, with a design suited to travel, work, and everyday adventures."
+  ],
+  "underwear_sleepwear": [
+    "Enjoy everyday comfort with {name}, designed to fit naturally into your daily wardrobe.",
+    "Add {name} to your essentials for a comfortable and easy everyday wardrobe option.",
+    "Relax in comfort with {name}, a practical addition to your everyday clothing collection.",
+    "Keep your wardrobe comfortable and versatile with {name}, suited for everyday wear and downtime."
+  ],
+  "activewear": [
+    "Stay comfortable while you move with {name}, designed for workouts, active days, and everyday wear.",
+    "Take on your active routine with {name}, combining comfort and versatile everyday style.",
+    "Move with confidence in {name}, a practical addition to your fitness and activewear collection.",
+    "From workouts to everyday errands, {name} offers a comfortable option for an active lifestyle."
+  ],
+  "makeup": [
+    "Bring your look together with {name}, an easy addition to your everyday beauty collection.",
+    "Add {name} to your makeup routine for a simple way to create a polished everyday look.",
+    "Refresh your beauty essentials with {name}, designed to complement your everyday makeup routine.",
+    "Create your look your way with {name}, a versatile addition to your beauty collection."
+  ],
+  "nail_care": [
+    "Keep your nails looking their best with {name}, a convenient addition to your everyday beauty routine.",
+    "Add {name} to your nail-care essentials for an easy and enjoyable routine.",
+    "Give your nail-care collection an upgrade with {name}, suited for everyday personal care.",
+    "Make nail care more convenient with {name}, a practical beauty essential for your routine."
+  ],
+  "fragrance_body_care": [
+    "Refresh your everyday routine with {name}, a personal-care essential designed for moments of self-care.",
+    "Add a fresh touch to your routine with {name}, an easy addition to your body-care collection.",
+    "Make {name} part of your daily self-care essentials for a simple, refreshing experience.",
+    "Treat yourself to {name}, a convenient choice for everyday freshness and personal care."
+  ],
+  "health_wellness": [
+    "Support your everyday wellness routine with {name}, a practical addition to your personal essentials.",
+    "Make {name} part of your everyday wellness routine for convenient and consistent self-care.",
+    "Add {name} to your wellness essentials, designed to fit naturally into your everyday routine.",
+    "Bring more convenience to your personal wellness routine with {name}."
+  ],
+  "supplements": [
+    "Make {name} part of your everyday wellness routine, designed for convenient use as part of a balanced lifestyle.",
+    "Add {name} to your daily wellness essentials for a convenient routine-friendly option.",
+    "Keep your wellness routine organised with {name}, an easy addition to your everyday essentials.",
+    "Discover {name}, a convenient choice for supporting your personal wellness routine."
+  ],
+  "fitness_equipment": [
+    "Build a stronger active routine with {name}, a practical addition to your home or gym setup.",
+    "Take your workouts further with {name}, designed to complement your fitness routine.",
+    "Add {name} to your fitness setup for a convenient option during training and active sessions.",
+    "Make your workouts more complete with {name}, a useful addition to your fitness essentials."
+  ],
+  "books": [
+    "Discover your next great read with {name}, perfect for quiet moments, learning, and everyday enjoyment.",
+    "Add {name} to your reading collection and enjoy a new story, perspective, or learning experience.",
+    "Make time for a good read with {name}, a thoughtful addition to any personal library.",
+    "Explore {name}, a great choice for readers looking to learn, relax, or discover something new."
+  ],
+  "stationery": [
+    "Keep your everyday notes and ideas organised with {name}, a practical addition to your stationery collection.",
+    "Make writing, planning, and organising easier with {name}, designed for everyday use.",
+    "Add {name} to your desk essentials for a simple and useful everyday stationery solution.",
+    "Stay prepared for notes, plans, and creative ideas with {name}."
+  ],
+  "school_supplies": [
+    "Stay prepared for school with {name}, a practical essential designed for everyday learning.",
+    "Add {name} to your school supplies for a convenient and useful everyday essential.",
+    "Make everyday school tasks easier with {name}, suited for students and learning routines.",
+    "Keep learning essentials within reach with {name}, a practical choice for school and study."
+  ],
+  "toys_games": [
+    "Bring more fun to playtime with {name}, a great choice for entertainment and memorable moments.",
+    "Make playtime more exciting with {name}, designed for fun, creativity, and everyday enjoyment.",
+    "Discover {name}, a fun addition to any toy and game collection.",
+    "Give family and friends something enjoyable to share with {name}, perfect for games and playtime."
+  ],
+  "gaming": [
+    "Level up your gaming setup with {name}, designed to make your gaming experience more enjoyable.",
+    "Take your gaming sessions further with {name}, a practical addition to your gaming collection.",
+    "Upgrade your setup with {name}, made for gamers who want more convenience and enjoyment.",
+    "Bring more to your gaming experience with {name}, a useful addition to any gaming setup."
+  ],
+  "computers": [
+    "Upgrade your everyday computing setup with {name}, designed for work, study, entertainment, and more.",
+    "Get more done with {name}, a practical technology choice for everyday computing needs.",
+    "Bring more convenience to your digital workspace with {name}, suited for everyday tasks and productivity.",
+    "Discover {name}, a versatile addition to your everyday computer setup."
+  ],
+  "computer_accessories": [
+    "Complete your workstation with {name}, a practical accessory designed for everyday computing.",
+    "Improve your everyday setup with {name}, adding convenience to work, study, and digital tasks.",
+    "Add {name} to your computer essentials for a more convenient and organised setup.",
+    "Make your digital workspace work better for you with {name}, a useful everyday accessory."
+  ],
+  "cameras": [
+    "Capture more memorable moments with {name}, a versatile choice for photography and everyday creativity.",
+    "Bring your creative ideas to life with {name}, designed for capturing moments worth remembering.",
+    "Explore photography and content creation with {name}, a useful addition to your creative setup.",
+    "Keep your best moments close with {name}, a practical choice for everyday photography and creative work."
+  ],
+  "audio": [
+    "Enjoy your favourite sounds with {name}, designed to bring more convenience to your everyday listening experience.",
+    "Take your music and entertainment anywhere with {name}, a practical addition to your audio setup.",
+    "Upgrade your everyday listening with {name}, suited for music, calls, entertainment, and more.",
+    "Bring better convenience to your audio experience with {name}, a versatile everyday choice."
+  ],
+  "smart_home": [
+    "Bring more convenience into your home with {name}, designed for a smarter everyday living experience.",
+    "Upgrade your home setup with {name}, a practical addition to modern everyday living.",
+    "Make everyday home routines easier with {name}, designed to add convenience and functionality.",
+    "Discover {name}, a useful addition for creating a more convenient and connected home."
+  ],
+  "lighting": [
+    "Brighten your space with {name}, designed to add practical lighting and a welcoming feel to your surroundings.",
+    "Give your space a fresh glow with {name}, a versatile lighting choice for everyday use.",
+    "Create the right atmosphere with {name}, a practical addition to your home or workspace.",
+    "Add useful light and style to your space with {name}, suited for everyday living."
+  ],
+  "decor": [
+    "Give your space a personal touch with {name}, designed to complement your home and everyday surroundings.",
+    "Refresh your interior with {name}, an easy way to add character and style to your space.",
+    "Add personality to your home with {name}, a versatile decor piece for everyday spaces.",
+    "Make your space feel more complete with {name}, designed to bring an inviting finishing touch."
+  ],
+  "bedding": [
+    "Create a more comfortable bedroom with {name}, designed to complement your everyday rest routine.",
+    "Refresh your bedroom essentials with {name}, a practical addition for a comfortable space.",
+    "Bring comfort and style to your bedroom with {name}, suited for everyday use.",
+    "Give your bedroom a simple upgrade with {name}, designed for comfort and everyday living."
+  ],
+  "bathroom": [
+    "Refresh your bathroom with {name}, a practical addition designed for everyday convenience.",
+    "Make your daily routine easier with {name}, a useful bathroom essential for everyday use.",
+    "Add {name} to your bathroom essentials for a clean, convenient, and practical setup.",
+    "Bring more organisation and convenience to your bathroom with {name}."
+  ],
+  "cleaning": [
+    "Make everyday cleaning easier with {name}, a practical essential for keeping your space fresh and organised.",
+    "Keep your home looking its best with {name}, designed to support everyday cleaning routines.",
+    "Add {name} to your cleaning essentials for a convenient everyday solution.",
+    "Tackle everyday cleaning tasks with {name}, a useful addition to your home-care collection."
+  ],
+  "laundry": [
+    "Make laundry day easier with {name}, a practical addition to your everyday laundry essentials.",
+    "Keep your laundry routine organised with {name}, designed for convenient everyday use.",
+    "Add {name} to your laundry essentials for a simple and practical solution.",
+    "Bring more convenience to your laundry routine with {name}, suited for everyday household use."
+  ],
+  "garden": [
+    "Keep your garden looking its best with {name}, a practical addition to your gardening essentials.",
+    "Make everyday gardening easier with {name}, designed for planting, maintenance, and outdoor care.",
+    "Add {name} to your garden toolkit for a convenient choice during everyday outdoor tasks.",
+    "Enjoy your outdoor space even more with {name}, a useful addition to your gardening collection."
+  ],
+  "outdoor": [
+    "Make the most of the outdoors with {name}, designed for everyday adventures, relaxation, and outdoor activities.",
+    "Take {name} along for your next outdoor experience, offering practical convenience wherever you go.",
+    "Add {name} to your outdoor essentials for camping, trips, recreation, or everyday adventures.",
+    "Get ready for more outdoor moments with {name}, a practical addition to your adventure gear."
+  ],
+  "travel": [
+    "Make every trip easier with {name}, designed to add convenience to your travel routine.",
+    "Travel with confidence using {name}, a practical essential for journeys, holidays, and everyday adventures.",
+    "Add {name} to your travel essentials for a more convenient and organised journey.",
+    "Get ready for your next adventure with {name}, made for convenient everyday travel."
+  ],
+  "automotive_care": [
+    "Keep your vehicle looking its best with {name}, a practical addition to your car-care essentials.",
+    "Make vehicle care easier with {name}, designed for everyday cleaning, maintenance, and upkeep.",
+    "Add {name} to your automotive-care collection for a convenient everyday solution.",
+    "Give your vehicle a little extra care with {name}, a useful essential for everyday car maintenance."
+  ],
+  "motorcycle": [
+    "Keep your ride ready with {name}, a practical addition to your motorcycle essentials.",
+    "Upgrade your motorcycle setup with {name}, designed for everyday riding and convenience.",
+    "Add {name} to your riding essentials for a useful and practical everyday solution.",
+    "Make every ride more convenient with {name}, suited for riders who value practical essentials."
+  ],
+  "baby_care": [
+    "Make everyday baby care easier with {name}, a practical essential designed for daily routines.",
+    "Add {name} to your baby-care essentials for convenient everyday use.",
+    "Keep your little one's routine prepared with {name}, a useful addition to your baby essentials.",
+    "Bring more convenience to everyday baby care with {name}, designed around practical daily needs."
+  ],
+  "maternity": [
+    "Make everyday life more comfortable with {name}, a practical addition to a maternity wardrobe and essentials.",
+    "Add {name} to your maternity essentials for comfort, convenience, and everyday use.",
+    "Designed with everyday comfort in mind, {name} is a versatile addition to your maternity collection.",
+    "Enjoy greater everyday convenience with {name}, suited to changing needs during maternity."
+  ],
+  "pet_food": [
+    "Give your pet something they'll enjoy with {name}, a convenient addition to their everyday feeding routine.",
+    "Keep your pet's meals prepared with {name}, a practical choice for everyday feeding.",
+    "Add {name} to your pet-care essentials for a convenient feeding option.",
+    "Make everyday feeding simple with {name}, suited to your pet's regular routine."
+  ],
+  "pet_accessories": [
+    "Add more comfort and convenience to your pet's routine with {name}.",
+    "Make everyday moments with your pet even better with {name}, a practical addition to their essentials.",
+    "Keep your pet's essentials complete with {name}, designed for everyday use and enjoyment.",
+    "Give your furry companion a useful addition with {name}, suited to everyday care and play."
+  ],
+  "tools_hardware": [
+    "Get the job done with {name}, a practical addition to your toolkit for everyday tasks and projects.",
+    "Make repairs and projects easier with {name}, designed to support practical everyday work.",
+    "Keep your toolkit prepared with {name}, a useful choice for maintenance, DIY, and everyday jobs.",
+    "Add {name} to your tools for a convenient solution when tackling everyday projects."
+  ],
+  "building_materials": [
+    "Build with confidence using {name}, a practical material suited to construction, renovation, and everyday projects.",
+    "Add {name} to your building supplies for a dependable choice for construction and improvement work.",
+    "Make your next project easier with {name}, a useful addition to your construction essentials.",
+    "Get your project moving with {name}, suited for building, repairs, renovation, and practical work."
+  ],
+  "industrial": [
+    "Support your business operations with {name}, a practical choice for professional and industrial needs.",
+    "Add {name} to your workplace essentials for reliable everyday operations and practical use.",
+    "Designed for practical work environments, {name} is a useful addition to your professional setup.",
+    "Keep your operations prepared with {name}, suited to everyday industrial and business needs."
+  ],
+  "restaurant_supplies": [
+    "Keep your food-service setup ready with {name}, a practical essential for everyday restaurant operations.",
+    "Make everyday food preparation and service easier with {name}, designed for practical professional use.",
+    "Add {name} to your restaurant essentials for a convenient solution to everyday service needs.",
+    "Equip your food-service space with {name}, a useful addition for preparation, service, and daily operations."
+  ],
+  "office_furniture": [
+    "Create a more productive workspace with {name}, designed for comfort and everyday office use.",
+    "Upgrade your office with {name}, a practical addition for work, meetings, and everyday productivity.",
+    "Bring more comfort and function to your workspace with {name}, suited to modern office environments.",
+    "Make your work area more complete with {name}, a useful addition to any professional workspace."
+  ],
+  "musical_instruments": [
+    "Bring your music to life with {name}, a great addition for practice, performance, and creative expression.",
+    "Explore your musical creativity with {name}, suited for learning, practice, and performance.",
+    "Add {name} to your music collection and make more room for creativity and expression.",
+    "Whether you're learning or performing, {name} is a versatile addition to your musical journey."
+  ],
+  "art_crafts": [
+    "Bring your ideas to life with {name}, a creative essential for art, crafts, and personal projects.",
+    "Unleash your creativity with {name}, a useful addition to any art and craft collection.",
+    "Make your next creative project more enjoyable with {name}, designed for hands-on creativity.",
+    "Add {name} to your creative supplies and turn ideas into something you can enjoy and share."
+  ],
+  "religious_items": [
+    "Add {name} to your personal collection as a meaningful item suited to reflection, worship, or everyday use.",
+    "Discover {name}, a thoughtful addition to your personal or family collection.",
+    "Bring {name} into your everyday space as a meaningful and purposeful item.",
+    "A thoughtful choice for personal use or gifting, {name} adds meaning to your collection."
+  ],
+  "gifts": [
+    "Make someone's day special with {name}, a thoughtful choice for gifting and memorable occasions.",
+    "Looking for a thoughtful gift? {name} is a versatile choice for birthdays, celebrations, and special moments.",
+    "Give a gift they'll appreciate with {name}, perfect for adding a personal touch to any occasion.",
+    "Celebrate someone special with {name}, a simple and thoughtful gifting choice."
+  ],
+  "party_supplies": [
+    "Make your celebration more memorable with {name}, a fun and practical addition to your party essentials.",
+    "Get the party started with {name}, designed to add a little more fun to your special occasion.",
+    "Bring more excitement to your celebration with {name}, perfect for parties, gatherings, and memorable moments.",
+    "Complete your event setup with {name}, a useful and fun addition to your party collection."
+  ],
+  "security": [
+    "Add peace of mind to your everyday setup with {name}, a practical choice for security and protection needs.",
+    "Keep your space better prepared with {name}, designed to support everyday security needs.",
+    "Upgrade your security setup with {name}, a useful addition for home, office, or everyday protection.",
+    "Bring more confidence to your security routine with {name}, a practical everyday solution."
+  ],
+  "solar_energy": [
+    "Bring practical energy solutions into your routine with {name}, designed for everyday power and convenience.",
+    "Make your energy setup more flexible with {name}, a practical addition for everyday power needs.",
+    "Add {name} to your energy essentials for a convenient solution to everyday power requirements.",
+    "Stay prepared for your power needs with {name}, suited for home, work, travel, and everyday use."
+  ],
+  "phones_tablets": [
+    "Stay connected and productive with {name}, designed for communication, entertainment, work, and everyday tasks.",
+    "Bring more convenience to your digital routine with {name}, a versatile choice for modern everyday use.",
+    "Enjoy a connected everyday experience with {name}, suited for work, entertainment, communication, and more.",
+    "Upgrade your mobile setup with {name}, designed to fit naturally into your everyday digital life."
+  ],
+  "networking": [
+    "Keep your devices connected with {name}, a practical addition to your home or business network setup.",
+    "Build a more reliable connection setup with {name}, designed for everyday networking needs.",
+    "Upgrade your network essentials with {name}, a useful choice for connected homes, offices, and workspaces.",
+    "Make connectivity more convenient with {name}, suited to everyday home and professional networking."
+  ],
+  "printing": [
+    "Make everyday printing easier with {name}, a practical addition to your home, school, or office setup.",
+    "Keep your printing essentials ready with {name}, designed for convenient everyday use.",
+    "Bring more convenience to your workspace with {name}, a useful choice for everyday printing needs.",
+    "Handle everyday documents and printing tasks with ease using {name}."
+  ],
+  "bags_accessories": [
+    "Complete your everyday carry with {name}, a practical accessory designed for convenience and style.",
+    "Add {name} to your daily essentials for a useful combination of function and everyday style.",
+    "Make your everyday carry more convenient with {name}, suited to work, travel, and casual outings.",
+    "Keep your essentials close and your style complete with {name}."
+  ]
+}

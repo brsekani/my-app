@@ -15,6 +15,7 @@ import Link from "next/link";
 import { productSchema } from "@/schemas";
 import { useRouter } from "next/navigation";
 import { useCreateProductMutation } from "@/redux/api/productApi";
+import { generateProductDescription } from "@/utils/generateProductDescription";
 
 type AddProductDrawerProps = {
   onClose: () => void;
@@ -30,6 +31,8 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
       images: [] as File[],
       productName: "",
       description: "",
+      stockQuantity: "1",
+      unlimitedStock: false,
       price: {
         currency: "NGN",
         amount: "",
@@ -98,6 +101,14 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
     const updatedImages = [...values.images, ...fileArray].slice(0, 3);
 
     formik.setFieldValue("images", updatedImages);
+  };
+
+  const handleGenerateDescription = () => {
+    if (!values.productName.trim()) return;
+
+    const description = generateProductDescription(values.productName);
+
+    formik.setFieldValue("description", description);
   };
 
   return (
@@ -246,6 +257,51 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
               mode={"amount"}
             />
 
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[14px] text-[#111111]">
+                  Stock available
+                </label>
+
+                <label className="flex items-center gap-2 text-[12px] text-[#666666] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="unlimitedStock"
+                    checked={values.unlimitedStock}
+                    onChange={handleChange}
+                    className="h-3.5 w-3.5 accent-[#111111]"
+                  />
+                  Unlimited stock
+                </label>
+              </div>
+
+              <input
+                type="text"
+                name="stockQuantity"
+                inputMode="numeric"
+                pattern="[1-9][0-9]*"
+                disabled={values.unlimitedStock}
+                placeholder={values.unlimitedStock ? "Unlimited" : "e.g. 25"}
+                value={values.stockQuantity}
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  // Allow empty while typing, or positive whole numbers only
+                  if (value === "" || /^[1-9][0-9]*$/.test(value)) {
+                    formik.setFieldValue("stockQuantity", value);
+                  }
+                }}
+                onBlur={handleBlur}
+                className="w-full bg-[#F5F5F5] rounded px-[14px] py-3 text-[14px] outline-none border border-transparent focus:ring-1 focus:ring-[#A7E981] disabled:opacity-50"
+              />
+
+              {errors.stockQuantity &&
+                touched.stockQuantity &&
+                !values.unlimitedStock && (
+                  <p className="text-red-500 text-xs">{errors.stockQuantity}</p>
+                )}
+            </div>
+
             {/* DESCRIPTION */}
             <div className="flex flex-col gap-2">
               <label className="text-[14px] text-[#111111]">Description</label>
@@ -266,6 +322,21 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
 
                 {errors.description && touched.description && (
                   <p className="text-red-500 text-xs">{errors.description}</p>
+                )}
+              </div>
+
+              <div className="w-full flex justify-end -mt-1">
+                {values.productName.trim() && (
+                  <button
+                    type="button"
+                    onClick={handleGenerateDescription}
+                    className="group inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] font-medium text-[#111111] bg-[#7ed957] hover:bg-[#5fc23e] active:scale-[0.98] transition-all duration-200"
+                  >
+                    <span className="text-[13px] transition-transform duration-200 group-hover:rotate-12">
+                      ✨
+                    </span>
+                    <span>Generate description</span>
+                  </button>
                 )}
               </div>
             </div>
