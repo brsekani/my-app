@@ -20,15 +20,13 @@ import Link from "next/link";
 import { useGetProductsQuery } from "@/redux/api/productApi";
 import { getImageUrl } from "@/lib/get-image-url";
 import ProductCardSkeleton from "@/components/skeletons/ProductCardSkeleton";
-import { shareLink } from "@/lib/share";
 import ShareSheet from "@/components/ShareSheet";
+import { useGetCustomerStoreQuery } from "@/redux/api/storeApi";
+import { getCurrencyInfo } from "@/utils/currency";
 
 export default function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [storeLink, setStoreLink] = useState(
-    "https://thiswillbe theshoplink--a94df7b2-215e-45ca-8d4b-68ba8a0ac2",
-  );
   const [isCopied, setIsCopied] = useState(false);
   const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
   const [openAddProductDrawer, setOpenAddProductDrawer] = useState(false);
@@ -44,6 +42,24 @@ export default function DashboardContent() {
     search,
   });
 
+  const {
+    data: userData,
+    isLoading: userDataLoading,
+    isError,
+    error,
+  } = useGetCustomerStoreQuery();
+
+  const currency = userData?.data?.store?.currency ?? "NGN";
+  const storeLink = `https://shelfie-teal.vercel.app/shops/${userData?.data.store.slug}`;
+
+  const { code, symbol } = getCurrencyInfo(currency);
+
+  console.log(code); // AUD
+  console.log(symbol); // $
+
+  console.log(userData);
+  console.log(currency);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(storeLink);
@@ -58,78 +74,39 @@ export default function DashboardContent() {
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents the browser from doing a full page refresh
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    if (searchValue.trim()) {
-      // Updates URL to /dashboard?q=your-search-term
-      router.push(`?q=${encodeURIComponent(searchValue.trim())}`);
+    const params = new URLSearchParams(searchParams.toString());
+    const trimmedSearch = searchValue.trim();
+
+    if (trimmedSearch) {
+      params.set("q", trimmedSearch);
     } else {
-      // If search is empty, clear the query param entirely
-      router.push("?");
+      params.delete("q");
     }
+
+    // New search should start from page 1
+    params.set("page", "1");
+
+    router.push(`?${params.toString()}`);
   };
 
   const handleClear = () => {
     setSearchValue("");
-    router.push("?"); // Clears the query from the URL
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    params.delete("q");
+    params.set("page", "1");
+
+    router.push(`?${params.toString()}`);
   };
 
   const products = data?.data?.products;
 
-  // const products = [
-  //   {
-  //     id: 1,
-  //     name: "Classic Blue Denim Jacket",
-  //     price: "₦28,000",
-  //     description:
-  //       "Timeless blue denim jacket made from durable cotton fabric with a comfortable inner lining.",
-  //     image: testImage,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Minimalist Leather Backpack",
-  //     price: "₦42,500",
-  //     description:
-  //       "Premium leather backpack with spacious compartments, padded straps, and laptop sleeve.",
-  //     image: testImage,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Wireless Noise Cancelling Headphones",
-  //     price: "₦85,000",
-  //     description:
-  //       "Immersive sound experience with active noise cancellation and 30-hour battery life.",
-  //     image: testImage,
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Smart Fitness Watch",
-  //     price: "₦65,000",
-  //     description:
-  //       "Track workouts, heart rate, sleep, and notifications with this sleek fitness smartwatch.",
-  //     image: testImage,
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Luxury Office Chair",
-  //     price: "₦120,000",
-  //     description:
-  //       "Ergonomic office chair with lumbar support, adjustable height, and breathable mesh.",
-  //     image: testImage,
-  //   },
-  //   {
-  //     id: 6,
-  //     name: "Portable Bluetooth Speaker",
-  //     price: "₦24,999",
-  //     description:
-  //       "Compact speaker with deep bass, waterproof design, and up to 12 hours playback.",
-  //     image: testImage,
-  //   },
-  // ];
-
   const hasSearch = searchValue.trim().length > 0;
-  const hasProducts = products?.length > 0;
+  const hasProducts = (products?.length ?? 0) > 0;
 
   const handleCloseAddProduct = () => {
     router.push("/dashboard");
@@ -140,12 +117,21 @@ export default function DashboardContent() {
     setOpenAddProductDrawer(shouldOpen);
   }, [searchParams]);
 
+  useEffect(() => {
+    setSearchValue(searchParams.get("q") ?? "");
+  }, [searchParams]);
+
   console.log(data);
 
   return (
     <div className="leading-[100%] space-y-6">
       <h6 className="text-[16px] leading-[100%] font-medium text-[#111111]">
-        Welcome, Shop name
+        Welcome,{" "}
+        {isLoading ? (
+          <span className="inline-block h-4 w-24 animate-pulse rounded bg-[#E5E7EB] align-middle" />
+        ) : (
+          userData?.data?.store?.name
+        )}
       </h6>
 
       <div className="p-4 border border-[#E5E5E5] rounded-[6px] space-y-2">
@@ -226,7 +212,7 @@ export default function DashboardContent() {
         </div>
       ) : hasProducts ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 md:grid-cols-3 xl:grid-cols-5 gap-[18px] md:gap-4">
-          {products.map((product) => (
+          {products?.map((product) => (
             <Link
               href={`/products/${product?.id}`}
               key={product.id}
@@ -234,17 +220,20 @@ export default function DashboardContent() {
             >
               <div className="relative w-full h-[235px] overflow-hidden rounded-[4px] border border-[#E5E5E5]">
                 <Image
-                  src={getImageUrl(product.photo)}
-                  // src={product?.photo}
+                  src={product.photo ?? "/images/product-placeholder.png"}
                   alt={product.name}
                   fill
+                  loading="eager"
                   className="object-cover"
                   sizes="(min-width: 768px) 251px, 166px"
                 />
               </div>
 
               <div className="space-y-1.5 text-[14px]">
-                <p className="text-[#111111] font-semibold">{product.price}</p>
+                <p className="font-semibold text-[#111111] truncate">
+                  {symbol}
+                  {Number(product.price).toLocaleString()}
+                </p>
 
                 <h3 className="text-[#111111] line-clamp-1">{product.name}</h3>
 
@@ -300,9 +289,9 @@ export default function DashboardContent() {
       <ShareSheet
         open={shareOpen}
         onClose={() => setShareOpen(false)}
-        title="Wireless Headphones"
-        text="Check out these amazing wireless headphones on Shelfie."
-        url="https://unsplash.com/photos/WLUHO9A_xik"
+        title="Share Store"
+        text={`Check out ${userData?.data.store.name || "our store"} and browse our products.`}
+        url={storeLink}
       />
     </div>
   );

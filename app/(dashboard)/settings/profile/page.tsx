@@ -9,31 +9,42 @@ import { FormikProvider, useFormik } from "formik";
 import { useState } from "react";
 import info from "@/assets/svgs/info.svg";
 import Image from "next/image";
+import { useGetCustomerStoreQuery } from "@/redux/api/storeApi";
 
 export default function Page() {
+  const {
+    data: user,
+    isLoading: userDataLoading,
+    isError,
+    error,
+  } = useGetCustomerStoreQuery();
+  const userData = user?.data?.store;
+
   const [showModal, setShowModal] = useState(false);
   const [pendingValues, setPendingValues] = useState<any>(null);
 
-  const userData = {
-    firstName: "Temidayo",
-    lastName: "Lawal",
-    email: "temidayo@example.com",
-    whatsapp: "+2348012345678",
-    shopName: "Temi Gadgets",
-    shopBio:
-      "We sell quality phones, accessories, smart devices, and electronics at affordable prices with nationwide delivery.",
-  };
+  // const userData = {
+  //   firstName: "Temidayo",
+  //   lastName: "Lawal",
+  //   email: "temidayo@example.com",
+  //   whatsapp: "+2348012345678",
+  //   shopName: "Temi Gadgets",
+  //   shopBio:
+  //     "We sell quality phones, accessories, smart devices, and electronics at affordable prices with nationwide delivery.",
+  // };
 
-  const originalWhatsapp = userData.whatsapp;
+  const originalWhatsapp = userData?.whatsapp_number;
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      firstName: userData?.firstName || "",
-      lastName: userData?.lastName || "",
+      // firstName: userData?.firstName || "",
+      // lastName: userData?.lastName || "",
+      firstName: "",
+      lastName: "",
       email: userData?.email || "",
-      whatsapp: userData?.whatsapp || "",
-      shopName: userData?.shopName || "",
-      shopBio: userData?.shopBio || "",
+      whatsapp: userData?.whatsapp_number || "",
+      shopName: userData?.name || "",
+      shopBio: userData?.description || "",
     },
     validationSchema: profileSchema,
     onSubmit: (values) => {

@@ -82,13 +82,15 @@ export const productSchema = Yup.object({
     otherwise: (schema) => schema.notRequired(),
   }),
 
-  unlimitedStock: Yup.boolean().required(),
+  price: Yup.string()
+    .required("Price is required")
+    .test("greater-than-zero", "Price must be greater than 0", (value) => {
+      if (!value) return false;
 
-  price: Yup.object({
-    currency: Yup.string().required("Currency is required"),
+      const numericValue = Number(value.replace(/,/g, ""));
 
-    amount: Yup.string().required("Amount is required"),
-  }),
+      return numericValue > 0;
+    }),
 });
 
 export const profileSchema = Yup.object({

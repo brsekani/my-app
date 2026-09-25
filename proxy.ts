@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  // TEMPORARY: Allow dashboard access while backend is down.
-  // Remove this before deploying to production.
-  const DESIGN_MODE = true;
+
+  // --------------------------------------------------
+  // Temporary design mode
+  // --------------------------------------------------
+
+  const DESIGN_MODE = false;
 
   if (
     DESIGN_MODE &&
@@ -15,16 +18,27 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // --------------------------------------------------
+  // Cookies
+  // --------------------------------------------------
+
   const token = request.cookies.get("shelfie_access_token")?.value;
+
   const emailVerified =
     request.cookies.get("shelfie_email_verified")?.value === "true";
 
   const isAuthenticated = Boolean(token);
 
+  // --------------------------------------------------
+  // Routes
+  // --------------------------------------------------
+
   const isVerificationRoute = pathname.startsWith(
     "/create-account/verify-email",
   );
+
   const isSetupShopRoute = pathname.startsWith("/setup-shop");
+
   const isHomeRoute = pathname === "/";
 
   const isProtectedRoute =
@@ -32,35 +46,36 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/products") ||
     pathname.startsWith("/settings");
 
-  // Auth pages (excluding verify-email)
   const isAuthRoute =
     pathname === "/login" ||
     pathname.startsWith("/forgot-password") ||
     (pathname.startsWith("/create-account") && !isVerificationRoute);
 
-  // -------------------------
-  // Not logged in
-  // -------------------------
+  // --------------------------------------------------
+  // Not authenticated
+  // --------------------------------------------------
 
-  // Can't access protected pages
   if (!isAuthenticated && isProtectedRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Can't access verify page without logging in
   if (!isAuthenticated && isVerificationRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // -------------------------
-  // Logged in but email NOT verified
-  // -------------------------
+  // --------------------------------------------------
+  // Authenticated but email not verified
+  // --------------------------------------------------
 
   if (isAuthenticated && !emailVerified && isProtectedRoute) {
     return NextResponse.redirect(
       new URL("/create-account/verify-email", request.url),
     );
   }
+
+  // --------------------------------------------------
+  // Home
+  // --------------------------------------------------
 
   if (isAuthenticated && isHomeRoute) {
     return NextResponse.redirect(
@@ -71,20 +86,47 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  // -------------------------
-  // Logged in and verified
-  // Check if store exists
-  // -------------------------
+  // --------------------------------------------------
+  // IMPORTANT:
+  // Don't check the store while on auth pages.
+  //
+  // Otherwise an expired token can make:
+  //
+  // /login → /dashboard → 401 → /login → ...
+  // --------------------------------------------------
 
-  if (isAuthenticated && emailVerified) {
+  if (
+    isAuthenticated &&
+    emailVerified &&
+    !isAuthRoute &&
+    !isVerificationRoute
+  ) {
     const storeResponse = await fetch(
       new URL("/api/customer/store", request.url),
       {
         headers: {
           cookie: request.headers.get("cookie") ?? "",
         },
+        cache: "no-store",
       },
     );
+
+    // --------------------------------------------------
+    // Token is invalid / expired
+    // --------------------------------------------------
+
+    if (storeResponse.status === 401) {
+      const response = NextResponse.redirect(new URL("/login", request.url));
+
+      response.cookies.delete("shelfie_access_token");
+      response.cookies.delete("shelfie_email_verified");
+
+      return response;
+    }
+
+    // --------------------------------------------------
+    // Store does not exist
+    // --------------------------------------------------
 
     const hasStore = storeResponse.status !== 404;
 
@@ -96,6 +138,10 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
+
+  // --------------------------------------------------
+  // Authenticated users shouldn't see auth pages
+  // --------------------------------------------------
 
   if (
     isAuthenticated &&

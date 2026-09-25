@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "0838-102-90-126-188.ngrok-free.app",
+        hostname: "s3.lumished.com",
       },
     ],
   },

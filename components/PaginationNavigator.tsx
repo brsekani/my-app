@@ -1,6 +1,6 @@
 "use client";
 
-interface Pagination {
+export interface Pagination {
   current_page: number;
   first_page: number;
   last_page: number;
@@ -22,23 +22,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import arrowLeft from "@/assets/svgs/arrow-left.svg";
 import arrowRight from "@/assets/svgs/arrow-right.svg";
-
-interface Pagination {
-  current_page: number;
-  first_page: number;
-  last_page: number;
-  next_page: number | null;
-  previous_page: number | null;
-  total: number;
-  per_page: number;
-  from: number;
-  to: number;
-}
-
-interface PaginationNavigatorProps {
-  pagination?: Pagination;
-  loading?: boolean;
-}
 
 export default function PaginationNavigator({
   pagination,

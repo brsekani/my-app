@@ -40,7 +40,7 @@ export default function Page() {
         }).unwrap();
 
         console.log("Login successful:", response);
-        showToast.success(response?.data?.message || "Login successful");
+        showToast.success(response?.message || "Login successful");
 
         actions.resetForm();
 

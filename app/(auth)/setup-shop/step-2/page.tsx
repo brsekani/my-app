@@ -119,7 +119,7 @@ export default function SetupShopStep2Page() {
                 />
 
                 {/* ❌ REMOVE value/onChange props */}
-                <div>
+                <div className="space-y-2">
                   <WhatsAppField />
                   <CustomAmountInput
                     name="currency"

@@ -4,8 +4,8 @@ import Image from "next/image";
 import Modal from "../Modal";
 import ViewProductImage from "./ViewProductImage";
 import { useState } from "react";
-import type { StoreTheme } from "@/types/store-theme";
-import { useStoreTheme } from "@/hooks/useStoreTheme";
+import { StoreTheme } from "@/types/store-theme";
+import { getLayoutClasses } from "@/store/product-layout";
 
 interface ViewProductDetailsProps {
   // product: {
@@ -15,6 +15,7 @@ interface ViewProductDetailsProps {
   //   description: string;
   //   image: any | any[];
   // };
+  storeTheme: StoreTheme;
   product: any;
   onClose: () => void;
   onConfirm: () => void;
@@ -22,17 +23,22 @@ interface ViewProductDetailsProps {
 
 export default function ViewProductDetails({
   product,
-
   onClose,
   onConfirm,
+  storeTheme,
 }: ViewProductDetailsProps) {
-  const { storeTheme, themeLoaded } = useStoreTheme();
+  const classes = getLayoutClasses(storeTheme.productLayout);
+
+  const isDefault = storeTheme.productLayout === "default";
+
+  const isEditorial = storeTheme.productLayout === "editorial";
+
   const [openImages, setOpenImages] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  const previewImages = Array.isArray(product.image)
-    ? product.image
-    : [product.image];
+  const previewImages = Array.isArray(product.photos)
+    ? product.photos
+    : [product.photos];
 
   const formattedPrice =
     typeof product.price === "number"
@@ -105,11 +111,17 @@ export default function ViewProductDetails({
         <p className="leading-6 text-[#777777]">{product.description}</p>
       </div>
 
-      <div className="flex justify-center gap-3 text-[14px] font-semibold">
+      <div className="flex w-full gap-3 text-[14px] font-semibold">
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border px-[40.5px] py-2.5 transition-colors hover:bg-black/5"
+          className={`flex flex-1 items-center justify-center py-2.5 transition-colors hover:bg-black/5 ${
+            isDefault
+              ? "rounded-full border"
+              : isEditorial
+                ? "border"
+                : "rounded-xl border"
+          }`}
           style={{
             borderColor: storeTheme.brandColor,
             color: storeTheme.brandColor,
@@ -121,10 +133,20 @@ export default function ViewProductDetails({
         <button
           type="button"
           onClick={onConfirm}
-          className="rounded-full px-5 py-2.5 text-white transition-opacity hover:opacity-90"
-          style={{
-            backgroundColor: storeTheme.brandColor,
-          }}
+          className={`${classes.button} flex flex-1 items-center justify-center !m-0`}
+          style={
+            isDefault
+              ? undefined
+              : isEditorial
+                ? {
+                    borderColor: storeTheme.brandColor,
+                    color: storeTheme.brandColor,
+                  }
+                : {
+                    backgroundColor: storeTheme.brandColor,
+                    color: "#FFFFFF",
+                  }
+          }
         >
           Order on WhatsApp
         </button>
@@ -140,7 +162,8 @@ export default function ViewProductDetails({
           images={previewImages}
           initialIndex={selectedImageIndex}
           onClose={() => setOpenImages(false)}
-          onConfirm={onConfirm}
+          // onConfirm={onConfirm}
+          storeTheme={storeTheme}
         />
       </Modal>
     </div>

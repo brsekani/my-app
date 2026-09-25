@@ -33,10 +33,7 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
       description: "",
       stockQuantity: "1",
       unlimitedStock: false,
-      price: {
-        currency: "NGN",
-        amount: "",
-      },
+      price: "",
     },
 
     validationSchema: productSchema,
@@ -49,14 +46,12 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
         formData.append("description", values.description);
         formData.append(
           "price",
-          String(Number(values.price.amount.replace(/,/g, ""))),
+          String(Number(values.price.replace(/,/g, ""))),
         );
 
         formData.append("compare_at_price", "0");
-        formData.append("stock_quantity", "100");
-        formData.append("quantity", "100");
-        formData.append("currency", values.price.currency);
-        formData.append("status", "DRAFT");
+        formData.append("stock_quantity", values.stockQuantity);
+        formData.append("status", "PUBLISHED");
 
         // Category IDs
         // formData.append(
@@ -84,6 +79,8 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
       }
     },
   });
+
+  console.log(formik);
 
   const { values, handleChange, handleBlur, errors, touched } = formik;
 
@@ -255,23 +252,13 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
               label="Price"
               disabled={false}
               mode={"amount"}
+              max={100_000_000}
             />
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <label className="text-[14px] text-[#111111]">
                   Stock available
-                </label>
-
-                <label className="flex items-center gap-2 text-[12px] text-[#666666] cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="unlimitedStock"
-                    checked={values.unlimitedStock}
-                    onChange={handleChange}
-                    className="h-3.5 w-3.5 accent-[#111111]"
-                  />
-                  Unlimited stock
                 </label>
               </div>
 

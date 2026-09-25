@@ -2,9 +2,13 @@
 
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { PRODUCT_LAYOUT_CONFIG } from "@/lib/utils";
+import {
+  useGetCustomerStoreQuery,
+  useUpdateStoreMutation,
+} from "@/redux/api/storeApi";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type ProductLayout =
+export type ProductLayout =
   | "default"
   | "classic"
   | "compact"
@@ -19,16 +23,18 @@ interface StoreTheme {
   productLayout: ProductLayout;
 }
 
-type PreviewDevice = "desktop" | "mobile";
-
-const STORAGE_KEY = "storeface-store-theme";
-
-const DEFAULT_THEME: StoreTheme = {
-  name: "Default",
-  brandColor: "#111111",
-  backgroundColor: "#FFFFFF",
-  productLayout: "default",
+const isProductLayout = (value: unknown): value is ProductLayout => {
+  return (
+    value === "default" ||
+    value === "classic" ||
+    value === "compact" ||
+    value === "spacious" ||
+    value === "editorial" ||
+    value === "showcase"
+  );
 };
+
+type PreviewDevice = "desktop" | "mobile";
 
 const STORE_STYLE_PRESETS: StoreTheme[] = [
   {
@@ -61,12 +67,12 @@ const STORE_STYLE_PRESETS: StoreTheme[] = [
     backgroundColor: "#FFF1F2",
     productLayout: "editorial",
   },
-  {
-    name: "Sunset Deals",
-    brandColor: "#F97316",
-    backgroundColor: "#FFF7ED",
-    productLayout: "showcase",
-  },
+  // {
+  //   name: "Sunset Deals",
+  //   brandColor: "#F97316",
+  //   backgroundColor: "#FFF7ED",
+  //   productLayout: "showcase",
+  // },
 ];
 
 const PRODUCT_LAYOUTS: {
@@ -99,30 +105,112 @@ const PRODUCT_LAYOUTS: {
     label: "Modern Showcase",
     description: "A clean fashion and lifestyle layout.",
   },
+  // {
+  //   value: "showcase",
+  //   label: "Featured Showcase",
+  //   description: "Highlights selected products with larger cards.",
+  // },
 ];
 
 const PRODUCTS = [
-  { id: 1, name: "Classic Denim Jacket", price: "₦28,000" },
-  { id: 2, name: "Leather Backpack", price: "₦42,500" },
-  { id: 3, name: "Wireless Headphones", price: "₦85,000" },
-  { id: 4, name: "Smart Fitness Watch", price: "₦65,000" },
-  { id: 5, name: "Luxury Office Chair", price: "₦120,000" },
-  { id: 6, name: "Bluetooth Speaker", price: "₦24,999" },
+  {
+    id: 1,
+    name: "Classic Denim Jacket",
+    price: "₦28,000",
+  },
+  {
+    id: 2,
+    name: "Leather Backpack",
+    price: "₦42,500",
+  },
+  {
+    id: 3,
+    name: "Wireless Headphones",
+    price: "₦85,000",
+  },
+  {
+    id: 4,
+    name: "Smart Fitness Watch",
+    price: "₦65,000",
+  },
+  {
+    id: 5,
+    name: "Luxury Office Chair",
+    price: "₦120,000",
+  },
+  {
+    id: 6,
+    name: "Bluetooth Speaker",
+    price: "₦24,999",
+  },
 ];
 
 const isHexColor = (value: string) =>
   /^#([0-9A-F]{3}){1,2}$/i.test(value.trim());
 
 export default function StoreAppearancePage() {
+  const {
+    data: user,
+    isLoading: userDataLoading,
+    isError,
+  } = useGetCustomerStoreQuery();
+
+  const userData = user?.data?.store;
+
+  const [updateStore, { isLoading: isUpdating }] = useUpdateStoreMutation();
+
   const isMobile = useIsMobile();
-  const [theme, setTheme] = useState<StoreTheme>(DEFAULT_THEME);
+
+  const [theme, setTheme] = useState<StoreTheme | null>(null);
+  const [savedTheme, setSavedTheme] = useState<StoreTheme | null>(null);
+
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop");
-  const [savedTheme, setSavedTheme] = useState<StoreTheme>(DEFAULT_THEME);
-  const [loaded, setLoaded] = useState(false);
+
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   const previewRef = useRef<HTMLElement | null>(null);
 
+  /**
+   * Keeps track of the store that has already been initialized.
+   *
+   * This is important because RTK Query can refetch the store after
+   * an update. We do not want a refetch to overwrite unsaved changes
+   * currently being edited by the user.
+   */
+  const initializedStoreId = useRef<string | null>(null);
+
+  /**
+   * Initialize the editor from the API.
+   *
+   * There is intentionally NO localStorage here.
+   */
+  useEffect(() => {
+    if (!userData) return;
+
+    const storeId = String(userData.id ?? "current-store");
+
+    if (initializedStoreId.current === storeId) {
+      return;
+    }
+
+    const serverTheme: StoreTheme = {
+      name: "Custom style",
+      brandColor: userData.brand_color ?? "#111111",
+      backgroundColor: userData.background_color ?? "#FFFFFF",
+      productLayout: isProductLayout(userData.product_layout)
+        ? userData.product_layout
+        : "default",
+    };
+    setTheme(serverTheme);
+    setSavedTheme(serverTheme);
+
+    initializedStoreId.current = storeId;
+  }, [userData]);
+
+  /**
+   * Scroll to preview on mobile after a change.
+   */
   const scrollToPreviewOnMobile = () => {
     if (!isMobile) {
       return;
@@ -136,80 +224,175 @@ export default function StoreAppearancePage() {
     });
   };
 
-  useEffect(() => {
-    try {
-      const storedTheme = window.localStorage.getItem(STORAGE_KEY);
-
-      if (storedTheme) {
-        const parsedTheme = JSON.parse(storedTheme) as StoreTheme;
-        setTheme(parsedTheme);
-        setSavedTheme(parsedTheme);
-      }
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } finally {
-      setLoaded(true);
+  /**
+   * Compare the editable theme with the last saved API state.
+   */
+  const hasChanges = useMemo(() => {
+    if (!theme || !savedTheme) {
+      return false;
     }
-  }, []);
 
-  const hasChanges = useMemo(
-    () => JSON.stringify(theme) !== JSON.stringify(savedTheme),
-    [theme, savedTheme],
-  );
+    return (
+      theme.brandColor !== savedTheme.brandColor ||
+      theme.backgroundColor !== savedTheme.backgroundColor ||
+      theme.productLayout !== savedTheme.productLayout
+    );
+  }, [theme, savedTheme]);
 
-  const layout = PRODUCT_LAYOUT_CONFIG[theme.productLayout];
+  /**
+   * Do not render the editor until the API theme has been loaded.
+   */
+  const layout = useMemo(() => {
+    if (!theme) {
+      return PRODUCT_LAYOUT_CONFIG.default;
+    }
 
+    return (
+      PRODUCT_LAYOUT_CONFIG[
+        theme.productLayout as keyof typeof PRODUCT_LAYOUT_CONFIG
+      ] ?? PRODUCT_LAYOUT_CONFIG.default
+    );
+  }, [theme]);
+
+  /**
+   * Select one of the predefined themes.
+   */
   const selectPreset = (preset: StoreTheme) => {
-    setTheme({ ...preset });
+    setTheme({
+      ...preset,
+    });
+
     setSaved(false);
+    setSaveError("");
+
     scrollToPreviewOnMobile();
   };
 
+  /**
+   * Update either brand or background color.
+   */
   const updateColor = (
     key: "brandColor" | "backgroundColor",
     value: string,
   ) => {
-    setTheme((current) => ({
-      ...current,
-      name: "Custom style",
-      [key]: value,
-    }));
+    setTheme((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        name: "Custom style",
+        [key]: value,
+      };
+    });
+
     setSaved(false);
-    // scrollToPreviewOnMobile();
+    setSaveError("");
   };
 
+  /**
+   * Update product layout.
+   */
   const updateLayout = (productLayout: ProductLayout) => {
-    setTheme((current) => ({
-      ...current,
-      name: "Custom style",
-      productLayout,
-    }));
+    setTheme((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        name: "Custom style",
+        productLayout,
+      };
+    });
+
     setSaved(false);
+    setSaveError("");
+
     scrollToPreviewOnMobile();
   };
 
-  const saveTheme = () => {
-    if (!isHexColor(theme.brandColor) || !isHexColor(theme.backgroundColor)) {
+  /**
+   * Save the current editor state to the backend.
+   *
+   * The backend/API is the source of truth.
+   */
+  const saveTheme = async () => {
+    if (!theme) {
       return;
     }
 
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(theme));
-    setSavedTheme(theme);
-    setSaved(true);
+    if (!isHexColor(theme.brandColor) || !isHexColor(theme.backgroundColor)) {
+      setSaveError("Please enter valid hex colors before saving.");
+      return;
+    }
 
-    scrollToPreviewOnMobile();
-
-    window.setTimeout(() => setSaved(false), 2500);
-  };
-
-  const resetTheme = () => {
-    setTheme(DEFAULT_THEME);
+    setSaveError("");
     setSaved(false);
 
+    const formData = new FormData();
+
+    formData.append("brand_color", theme.brandColor);
+    formData.append("background_color", theme.backgroundColor);
+    formData.append("product_layout", theme.productLayout);
+
+    try {
+      const response = await updateStore(formData).unwrap();
+
+      console.log("Store updated:", response);
+
+      /**
+       * The current editor state is now the last successfully
+       * saved state.
+       */
+      setSavedTheme({
+        ...theme,
+      });
+
+      setSaved(true);
+
+      scrollToPreviewOnMobile();
+
+      window.setTimeout(() => {
+        setSaved(false);
+      }, 2500);
+    } catch (error) {
+      console.error("Failed to update store:", error);
+
+      setSaveError("We couldn't save your changes. Please try again.");
+    }
+  };
+
+  /**
+   * Reset only discards unsaved changes.
+   *
+   * It does NOT reset to the hardcoded Default theme.
+   * It restores the last successfully saved API state.
+   */
+  const resetTheme = () => {
+    if (!savedTheme) {
+      return;
+    }
+
+    setTheme({
+      ...savedTheme,
+    });
+
+    setSaved(false);
+    setSaveError("");
+
     scrollToPreviewOnMobile();
   };
 
+  /**
+   * Product grid changes depending on preview device and layout.
+   */
   const previewGridClass = useMemo(() => {
+    if (!theme) {
+      return "grid grid-cols-2 gap-3";
+    }
+
     if (previewDevice === "desktop") {
       return layout.grid;
     }
@@ -228,72 +411,62 @@ export default function StoreAppearancePage() {
         return "grid grid-cols-2 auto-rows-[190px] gap-3";
 
       case "classic":
+      case "default":
       default:
         return "grid grid-cols-2 gap-3";
     }
-  }, [layout.grid, previewDevice, theme.productLayout]);
+  }, [layout.grid, previewDevice, theme]);
 
-  useEffect(() => {
-    try {
-      const storedTheme = window.localStorage.getItem(STORAGE_KEY);
-
-      // No saved theme means use the original default storefront.
-      if (!storedTheme) {
-        setTheme(DEFAULT_THEME);
-        setSavedTheme(DEFAULT_THEME);
-        return;
-      }
-
-      const parsedTheme = JSON.parse(storedTheme) as Partial<StoreTheme>;
-
-      const validLayouts: ProductLayout[] = [
-        "default",
-        "classic",
-        "compact",
-        "spacious",
-        "editorial",
-        "showcase",
-      ];
-
-      const restoredTheme: StoreTheme = {
-        ...DEFAULT_THEME,
-        ...parsedTheme,
-        productLayout:
-          parsedTheme.productLayout &&
-          validLayouts.includes(parsedTheme.productLayout)
-            ? parsedTheme.productLayout
-            : "default",
-      };
-
-      setTheme(restoredTheme);
-      setSavedTheme(restoredTheme);
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
-      setTheme(DEFAULT_THEME);
-      setSavedTheme(DEFAULT_THEME);
-    } finally {
-      setLoaded(true);
-    }
-  }, []);
-
-  if (!loaded) {
+  /**
+   * Initial loading state.
+   */
+  if (userDataLoading || !theme || !savedTheme) {
     return (
       <div className="grid min-h-screen place-items-center bg-[#F7F7F8]">
-        <p className="text-sm text-[#777777]">Loading store appearance…</p>
+        <div className="text-center">
+          <div className="mx-auto mb-3 h-7 w-7 animate-spin rounded-full border-2 border-[#E5E5E5] border-t-[#111111]" />
+
+          <p className="text-sm text-[#777777]">Loading store appearance…</p>
+        </div>
+      </div>
+    );
+  }
+
+  /**
+   * API error state.
+   */
+  if (isError) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-[#F7F7F8] px-5">
+        <div className="max-w-md text-center">
+          <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-red-50 text-red-600">
+            !
+          </div>
+
+          <h2 className="font-semibold text-[#111111]">
+            Failed to load store appearance
+          </h2>
+
+          <p className="mt-2 text-sm leading-6 text-[#777777]">
+            We couldn't load your store settings. Please refresh the page and
+            try again.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto max-w-[1500px]">
+      <div className="mx-auto max-w-360">
+        {/* Header */}
         <header className="mb-6 flex flex-col gap-4 border-b border-[#E5E5E5] pb-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="mb-1 text-[14px] font-medium uppercase tracking-[0.18em] ">
+            <p className="mb-1 text-[14px] font-medium uppercase tracking-[0.18em]">
               Store settings
             </p>
 
-            <p className="text-[14px]">
+            <p className="text-[14px] text-[#777777]">
               Pick a style, customize it, and preview what customers will see.
             </p>
           </div>
@@ -302,30 +475,43 @@ export default function StoreAppearancePage() {
             <button
               type="button"
               onClick={resetTheme}
-              className="rounded-lg border border-[#D9D9D9] bg-white px-4 py-2.5 text-sm font-semibold text-[#333333] transition hover:bg-[#F1F1F1]"
+              disabled={!hasChanges || isUpdating}
+              className="rounded-lg border border-[#D9D9D9] bg-white px-4 py-2.5 text-sm font-semibold text-[#333333] transition hover:bg-[#F1F1F1] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Reset
             </button>
 
             <button
               type="button"
-              disabled={!hasChanges}
+              disabled={!hasChanges || isUpdating}
               onClick={saveTheme}
               className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
-              style={{ backgroundColor: theme.brandColor }}
+              style={{
+                backgroundColor: theme.brandColor,
+              }}
             >
-              {saved ? "Saved ✓" : "Save changes"}
+              {isUpdating ? "Saving..." : saved ? "Saved ✓" : "Save changes"}
             </button>
           </div>
         </header>
 
+        {/* Save error */}
+        {saveError && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {saveError}
+          </div>
+        )}
+
         <div className="grid gap-6 xl:grid-cols-[350px_minmax(0,1fr)]">
+          {/* Settings */}
           <aside className="space-y-5">
+            {/* Store styles */}
             <section className="rounded-2xl border border-[#E5E5E5] bg-white p-5">
               <div className="mb-4">
                 <h2 className="font-semibold text-[#111111]">
                   Choose a store style
                 </h2>
+
                 <p className="mt-1 text-sm leading-5 text-[#777777]">
                   Start with a preset, then personalize the colors and layout.
                 </p>
@@ -334,7 +520,6 @@ export default function StoreAppearancePage() {
               <div className="grid grid-cols-2 gap-3">
                 {STORE_STYLE_PRESETS.map((preset) => {
                   const selected =
-                    theme.name === preset.name &&
                     theme.brandColor === preset.brandColor &&
                     theme.backgroundColor === preset.backgroundColor &&
                     theme.productLayout === preset.productLayout;
@@ -352,12 +537,17 @@ export default function StoreAppearancePage() {
                     >
                       <div
                         className="h-24 p-3"
-                        style={{ backgroundColor: preset.backgroundColor }}
+                        style={{
+                          backgroundColor: preset.backgroundColor,
+                        }}
                       >
                         <div
                           className="mb-3 h-2 w-14 rounded-full"
-                          style={{ backgroundColor: preset.brandColor }}
+                          style={{
+                            backgroundColor: preset.brandColor,
+                          }}
                         />
+
                         <div className="grid grid-cols-3 gap-1.5">
                           {[0, 1, 2].map((item) => (
                             <div
@@ -376,7 +566,9 @@ export default function StoreAppearancePage() {
                         {selected && (
                           <span
                             className="grid h-5 w-5 shrink-0 place-items-center rounded-full text-[10px] text-white"
-                            style={{ backgroundColor: preset.brandColor }}
+                            style={{
+                              backgroundColor: preset.brandColor,
+                            }}
                           >
                             ✓
                           </span>
@@ -388,6 +580,7 @@ export default function StoreAppearancePage() {
               </div>
             </section>
 
+            {/* Brand colors */}
             <section className="rounded-2xl border border-[#E5E5E5] bg-white p-5">
               <h2 className="font-semibold text-[#111111]">Brand colors</h2>
 
@@ -408,9 +601,11 @@ export default function StoreAppearancePage() {
               </div>
             </section>
 
+            {/* Product layout */}
             <section className="rounded-2xl border border-[#E5E5E5] bg-white p-5">
               <div>
                 <h2 className="font-semibold text-[#111111]">Product layout</h2>
+
                 <p className="mt-1 text-sm text-[#777777]">
                   Choose how products are arranged for customers.
                 </p>
@@ -440,6 +635,7 @@ export default function StoreAppearancePage() {
                         <span className="block text-sm font-semibold text-[#222222]">
                           {option.label}
                         </span>
+
                         <span className="mt-0.5 block text-xs leading-4 text-[#777777]">
                           {option.description}
                         </span>
@@ -466,22 +662,25 @@ export default function StoreAppearancePage() {
             </section>
           </aside>
 
+          {/* Preview */}
           <section
             ref={previewRef}
-            className="xl:sticky xl:top-6 xl:self-start"
+            className="min-w-0 xl:sticky xl:top-6 xl:self-start"
           >
-            <div className="overflow-hidden rounded-2xl border border-[#DADADA] bg-[#ECECEC] shadow-sm">
-              <div className="flex items-center justify-between border-b border-[#DADADA] bg-white px-4 py-3">
-                <div>
-                  <p className="text-sm font-semibold text-[#111111]">
+            <div className="min-w-0 overflow-hidden rounded-2xl border border-[#DADADA] bg-[#ECECEC] shadow-sm">
+              {/* Preview toolbar */}
+              <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[#DADADA] bg-white px-4 py-3">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-[#111111]">
                     Live customer preview
                   </p>
-                  <p className="text-xs text-[#777777]">
-                    Updates instantly as you save.
+
+                  <p className="truncate text-xs text-[#777777]">
+                    Updates instantly as you customize.
                   </p>
                 </div>
 
-                <div className="flex items-center rounded-lg border border-[#E5E5E5] bg-[#F7F7F8] p-1">
+                <div className="flex shrink-0 items-center rounded-lg border border-[#E5E5E5] bg-[#F7F7F8] p-1">
                   <button
                     type="button"
                     onClick={() => setPreviewDevice("desktop")}
@@ -508,44 +707,51 @@ export default function StoreAppearancePage() {
                 </div>
               </div>
 
-              <div className="">
+              {/* Preview viewport */}
+              <div className="min-w-0 overflow-x-hidden p-0 sm:p-4">
                 <div
-                  className={`mx-auto overflow-hidden border border-black/10 bg-white shadow-xl transition-all duration-300 ${
+                  className={`mx-auto min-w-0 overflow-hidden border border-black/10 bg-white shadow-xl transition-all duration-300 ${
                     previewDevice === "mobile"
-                      ? "w-[390px] max-w-full rounded-[28px]"
+                      ? "w-full max-w-[390px] rounded-[28px]"
                       : "w-full max-w-full"
                   }`}
                 >
                   <div
-                    className="flex min-h-[720px] flex-col"
-                    style={{ backgroundColor: theme.backgroundColor }}
+                    className="flex min-h-[720px] min-w-0 max-w-full flex-col overflow-hidden"
+                    style={{
+                      backgroundColor: theme.backgroundColor,
+                    }}
                   >
+                    {/* Preview Header */}
                     <header
-                      className={`border-b border-black/10 ${
+                      className={`min-w-0 border-b border-black/10 ${
                         previewDevice === "mobile" ? "px-4 py-4" : "px-7 py-5"
                       }`}
                     >
                       <div
-                        className={`flex gap-4 ${
+                        className={`flex min-w-0 gap-4 ${
                           previewDevice === "mobile"
                             ? "flex-col"
                             : "items-start justify-between"
                         }`}
                       >
-                        <div>
-                          <div className="mb-3 flex items-center gap-3">
+                        <div className="min-w-0">
+                          <div className="flex min-w-0 items-center gap-3">
                             <div
-                              className="grid h-11 w-11 place-items-center rounded-xl text-lg font-bold text-white"
-                              style={{ backgroundColor: theme.brandColor }}
+                              className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-lg font-bold text-white"
+                              style={{
+                                backgroundColor: theme.brandColor,
+                              }}
                             >
                               S
                             </div>
 
-                            <div>
-                              <h2 className="text-base font-semibold text-[#111111]">
+                            <div className="min-w-0">
+                              <h2 className="truncate text-base font-semibold text-[#111111]">
                                 Sonia&apos;s Store
                               </h2>
-                              <p className="mt-0.5 text-xs text-[#777777]">
+
+                              <p className="truncate text-xs text-[#777777]">
                                 Fashion, bags and accessories
                               </p>
                             </div>
@@ -554,49 +760,59 @@ export default function StoreAppearancePage() {
 
                         <button
                           type="button"
-                          className={`rounded-full px-4 py-2 text-xs font-semibold text-white ${
+                          className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold text-white ${
                             previewDevice === "mobile" ? "w-full" : ""
                           }`}
-                          style={{ backgroundColor: theme.brandColor }}
+                          style={{
+                            backgroundColor: theme.brandColor,
+                          }}
                         >
                           Chat on WhatsApp
                         </button>
                       </div>
                     </header>
+
+                    {/* Preview Content */}
                     <div
-                      className={`flex-1 py-6 ${
+                      className={`min-w-0 flex-1 py-6 ${
                         previewDevice === "mobile" ? "px-4" : "px-7"
                       }`}
                     >
                       <div
-                        className={`mb-6 flex gap-4 ${
+                        className={`mb-6 flex min-w-0 gap-4 ${
                           previewDevice === "mobile"
                             ? "flex-col"
                             : "items-center justify-between"
                         }`}
                       >
-                        <div>
+                        <div className="min-w-0">
                           <p
-                            className="text-xs font-bold uppercase tracking-[0.16em]"
-                            style={{ color: theme.brandColor }}
+                            className="truncate text-xs font-bold uppercase tracking-[0.16em]"
+                            style={{
+                              color: theme.brandColor,
+                            }}
                           >
                             Our collection
                           </p>
-                          <h3 className="mt-2 text-xl font-semibold text-[#111111]">
+
+                          <h3 className="mt-2 truncate text-xl font-semibold text-[#111111]">
                             Products
                           </h3>
                         </div>
 
                         <div
-                          className={`rounded-lg border border-black/10 bg-white px-4 py-2.5 text-xs text-[#777777] ${
+                          className={`min-w-0 max-w-full rounded-lg border border-black/10 bg-white px-4 py-2.5 text-xs text-[#777777] ${
                             previewDevice === "mobile" ? "w-full" : "w-64"
                           }`}
                         >
-                          Search products...
+                          <span className="block truncate">
+                            Search products...
+                          </span>
                         </div>
                       </div>
 
-                      <div className={previewGridClass}>
+                      {/* Product Grid */}
+                      <div className={`min-w-0 max-w-full ${previewGridClass}`}>
                         {PRODUCTS.map((product, index) => {
                           const featured =
                             theme.productLayout === "showcase" && index === 0;
@@ -604,16 +820,14 @@ export default function StoreAppearancePage() {
                           return (
                             <article
                               key={product.id}
-                              className={`${layout.card} ${
-                                featured
-                                  ? previewDevice === "mobile"
-                                    ? "col-span-2 row-span-2"
-                                    : "col-span-2 row-span-2"
-                                  : ""
-                              }`}
+                              className={`min-w-0 max-w-full overflow-hidden ${
+                                layout.card
+                              } ${featured ? "col-span-2 row-span-2" : ""}`}
                             >
                               <div
-                                className={`relative overflow-hidden ${layout.image} ${
+                                className={`relative min-w-0 max-w-full overflow-hidden ${
+                                  layout.image
+                                } ${
                                   featured
                                     ? previewDevice === "mobile"
                                       ? "h-[300px]"
@@ -626,7 +840,7 @@ export default function StoreAppearancePage() {
                               >
                                 <div className="absolute inset-0 grid place-items-center">
                                   <div
-                                    className="h-12 w-12 rounded-full opacity-60"
+                                    className="h-12 w-12 shrink-0 rounded-full opacity-60"
                                     style={{
                                       backgroundColor: theme.brandColor,
                                     }}
@@ -634,10 +848,12 @@ export default function StoreAppearancePage() {
                                 </div>
                               </div>
 
-                              <div className={layout.content}>
+                              <div className={`min-w-0 ${layout.content}`}>
                                 <p
-                                  className="text-xs font-semibold"
-                                  style={{ color: theme.brandColor }}
+                                  className="truncate text-xs font-semibold"
+                                  style={{
+                                    color: theme.brandColor,
+                                  }}
                                 >
                                   {product.price}
                                 </p>
@@ -647,7 +863,7 @@ export default function StoreAppearancePage() {
                                 </h4>
 
                                 {theme.productLayout !== "compact" && (
-                                  <p className="line-clamp-2 text-[10px] leading-4 text-[#777777] sm:text-xs">
+                                  <p className="line-clamp-2 break-words text-[10px] leading-4 text-[#777777] sm:text-xs">
                                     Quality product with reliable delivery and
                                     direct WhatsApp ordering.
                                   </p>
@@ -656,10 +872,14 @@ export default function StoreAppearancePage() {
 
                               <button
                                 type="button"
-                                className={`mt-auto w-full px-3 py-2 text-[10px] font-semibold text-white sm:text-xs ${layout.button}`}
-                                style={{ backgroundColor: theme.brandColor }}
+                                className={`mt-auto min-w-0 max-w-full px-3 py-2 text-[10px] font-semibold text-white sm:text-xs ${layout.button}`}
+                                style={{
+                                  backgroundColor: theme.brandColor,
+                                }}
                               >
-                                Order on WhatsApp
+                                <span className="block truncate">
+                                  Order on WhatsApp
+                                </span>
                               </button>
                             </article>
                           );
@@ -667,23 +887,26 @@ export default function StoreAppearancePage() {
                       </div>
                     </div>
 
-                    <footer className="mt-auto border-t border-black/10 px-5 py-4 text-center text-xs text-[#777777]">
-                      Powered by Storeface
+                    {/* Footer */}
+                    <footer className="mt-auto min-w-0 border-t border-black/10 px-5 py-4 text-center text-xs text-[#777777]">
+                      <span className="block truncate">
+                        Powered by Storeface
+                      </span>
                     </footer>
                   </div>
                 </div>
               </div>
             </div>
-
-            <p className="mt-3 text-center text-xs text-[#777777]">
-              Saved locally in this browser for now.
-            </p>
           </section>
         </div>
       </div>
     </main>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Color Field                                                                */
+/* -------------------------------------------------------------------------- */
 
 function ColorField({
   label,
@@ -764,6 +987,10 @@ function ColorField({
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Layout Thumbnail                                                           */
+/* -------------------------------------------------------------------------- */
+
 function LayoutThumbnail({
   layout,
   brandColor,
@@ -778,7 +1005,9 @@ function LayoutThumbnail({
           <span
             key={index}
             className="rounded-sm bg-white"
-            style={{ borderTop: `3px solid ${brandColor}` }}
+            style={{
+              borderTop: `3px solid ${brandColor}`,
+            }}
           />
         ))}
       </span>
@@ -792,7 +1021,9 @@ function LayoutThumbnail({
           <span
             key={index}
             className="rounded-md bg-white shadow-sm"
-            style={{ borderTop: `6px solid ${brandColor}` }}
+            style={{
+              borderTop: `6px solid ${brandColor}`,
+            }}
           />
         ))}
       </span>
@@ -806,8 +1037,11 @@ function LayoutThumbnail({
           <span key={index} className="flex flex-col gap-1">
             <span
               className="flex-1"
-              style={{ backgroundColor: `${brandColor}55` }}
+              style={{
+                backgroundColor: `${brandColor}55`,
+              }}
             />
+
             <span className="h-0.5 bg-[#AAAAAA]" />
           </span>
         ))}
@@ -820,9 +1054,13 @@ function LayoutThumbnail({
       <span className="grid h-14 w-20 shrink-0 grid-cols-2 grid-rows-2 gap-1 rounded-lg bg-[#F2F2F2] p-2">
         <span
           className="row-span-2 rounded-sm"
-          style={{ backgroundColor: `${brandColor}88` }}
+          style={{
+            backgroundColor: `${brandColor}88`,
+          }}
         />
+
         <span className="rounded-sm bg-white" />
+
         <span className="rounded-sm bg-white" />
       </span>
     );
@@ -834,7 +1072,9 @@ function LayoutThumbnail({
         <span
           key={index}
           className="rounded-sm bg-white"
-          style={{ borderTop: `4px solid ${brandColor}` }}
+          style={{
+            borderTop: `4px solid ${brandColor}`,
+          }}
         />
       ))}
     </span>

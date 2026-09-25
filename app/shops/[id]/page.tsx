@@ -17,12 +17,22 @@ import Modal from "@/components/Modal";
 import ViewProductDetails from "@/components/modals/ViewProductDetails";
 import ProductGrid from "@/components/store/ProductGrid";
 
-import { useStoreTheme } from "@/hooks/useStoreTheme";
 import { StoreProduct } from "@/types/store-product";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useState } from "react";
 import { Variants } from "framer-motion";
+import {
+  useGetPublicStoreProductsQuery,
+  useGetPublicStoreQuery,
+} from "@/redux/api/storeApi";
+import { openWhatsApp } from "@/utils/whatsapp";
+import StoreSkeleton from "@/components/skeletons/StoreSkeleton";
 
 const productGridVariants: Variants = {
   hidden: {},
@@ -51,62 +61,88 @@ const productCardVariants: Variants = {
   },
 };
 
-const products: StoreProduct[] = [
-  {
-    id: 1,
-    name: "Classic Blue Denim Jacket",
-    price: "₦28,000",
-    description:
-      "Timeless blue denim jacket made from durable cotton fabric with a comfortable inner lining.",
-    image: [testImage, testImage2],
-  },
-  {
-    id: 2,
-    name: "Minimalist Leather Backpack",
-    price: "₦42,500",
-    description:
-      "Premium leather backpack with spacious compartments, padded straps, and laptop sleeve.",
-    image: [testImage, testImage2],
-  },
-  {
-    id: 3,
-    name: "Wireless Noise Cancelling Headphones",
-    price: "₦85,000",
-    description:
-      "Immersive sound experience with active noise cancellation and 30-hour battery life.",
-    image: [testImage, testImage2],
-  },
-  {
-    id: 4,
-    name: "Smart Fitness Watch",
-    price: "₦65,000",
-    description:
-      "Track workouts, heart rate, sleep, and notifications with this sleek fitness smartwatch.",
-    image: [testImage, testImage2],
-  },
-  {
-    id: 5,
-    name: "Luxury Office Chair",
-    price: "₦120,000",
-    description:
-      "Ergonomic office chair with lumbar support, adjustable height, and breathable mesh.",
-    image: [testImage, testImage2],
-  },
-  {
-    id: 6,
-    name: "Portable Bluetooth Speaker",
-    price: "₦24,999",
-    description:
-      "Compact speaker with deep bass, waterproof design, and up to 12 hours playback.",
-    image: [testImage, testImage2],
-  },
-];
+// const products: StoreProduct[] = [
+//   {
+//     id: 1,
+//     name: "Classic Blue Denim Jacket",
+//     price: "₦28,000",
+//     description:
+//       "Timeless blue denim jacket made from durable cotton fabric with a comfortable inner lining.",
+//     image: [testImage, testImage2],
+//   },
+//   {
+//     id: 2,
+//     name: "Minimalist Leather Backpack",
+//     price: "₦42,500",
+//     description:
+//       "Premium leather backpack with spacious compartments, padded straps, and laptop sleeve.",
+//     image: [testImage, testImage2],
+//   },
+//   {
+//     id: 3,
+//     name: "Wireless Noise Cancelling Headphones",
+//     price: "₦85,000",
+//     description:
+//       "Immersive sound experience with active noise cancellation and 30-hour battery life.",
+//     image: [testImage, testImage2],
+//   },
+//   {
+//     id: 4,
+//     name: "Smart Fitness Watch",
+//     price: "₦65,000",
+//     description:
+//       "Track workouts, heart rate, sleep, and notifications with this sleek fitness smartwatch.",
+//     image: [testImage, testImage2],
+//   },
+//   {
+//     id: 5,
+//     name: "Luxury Office Chair",
+//     price: "₦120,000",
+//     description:
+//       "Ergonomic office chair with lumbar support, adjustable height, and breathable mesh.",
+//     image: [testImage, testImage2],
+//   },
+//   {
+//     id: 6,
+//     name: "Portable Bluetooth Speaker",
+//     price: "₦24,999",
+//     description:
+//       "Compact speaker with deep bass, waterproof design, and up to 12 hours playback.",
+//     image: [testImage, testImage2],
+//   },
+// ];
 
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
-  const { storeTheme, themeLoaded } = useStoreTheme();
+  const currentPage = Number(searchParams.get("page") ?? "1");
+  const currentSearch = searchParams.get("q") ?? "";
+
+  const params = useParams();
+
+  const slug = params.id as string;
+
+  const { data, isLoading, isError } = useGetPublicStoreQuery({
+    slug,
+  });
+  console.log(data);
+
+  const {
+    data: productsData,
+    isLoading: productsLoading,
+    isFetching: productsFetching,
+  } = useGetPublicStoreProductsQuery({
+    slug,
+    page: currentPage,
+    per_page: 1,
+    search: currentSearch || undefined,
+  });
+
+  console.log(productsData);
+
+  const products = productsData?.data?.products ?? [];
 
   const [searchValue, setSearchValue] = useState(searchParams.get("q") || "");
 
@@ -116,33 +152,51 @@ export default function Page() {
     null,
   );
 
+  const store = data?.data?.store;
+
+  const storeTheme = {
+    brandColor: store?.brand_color ?? "#111111",
+    backgroundColor: store?.background_color ?? "#FFFFFF",
+    productLayout: store?.product_layout ?? "default",
+  };
+
   const isDefault = storeTheme.productLayout === "default";
 
   const hasProducts = products.length > 0;
   const hasSearch = searchValue.trim().length > 0;
-
-  const currentPage = searchParams.get("page") ?? "1";
-  const currentSearch = searchParams.get("q") ?? "";
 
   const animationKey = `${currentSearch}-${currentPage}`;
 
   const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const params = new URLSearchParams(searchParams.toString());
+
     const trimmedSearch = searchValue.trim();
 
     if (trimmedSearch) {
-      router.push(`?q=${encodeURIComponent(trimmedSearch)}`);
-
-      return;
+      params.set("q", trimmedSearch);
+    } else {
+      params.delete("q");
     }
 
-    router.push("?");
+    // Always start search from page 1
+    params.delete("page");
+
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const handleClear = () => {
     setSearchValue("");
-    router.push("?");
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    params.delete("q");
+    params.delete("page");
+
+    const query = params.toString();
+
+    router.push(query ? `${pathname}?${query}` : pathname);
   };
 
   const handleProductClick = (product: StoreProduct) => {
@@ -154,11 +208,14 @@ export default function Page() {
     setShowProductModal(false);
     setSelectedProduct(null);
   };
+  if (isLoading || productsLoading) {
+    return <StoreSkeleton />;
+  }
 
-  if (!themeLoaded) {
+  if (isError || !store) {
     return (
       <div className="grid min-h-screen place-items-center bg-white">
-        <p className="text-sm text-[#777777]">Loading store...</p>
+        <p className="text-sm text-[#777777]">Store not found.</p>
       </div>
     );
   }
@@ -182,12 +239,11 @@ export default function Page() {
                     color: isDefault ? "#111111" : storeTheme.brandColor,
                   }}
                 >
-                  NAME OF STORE
+                  {store.name}
                 </h1>
 
                 <p className="text-[14px] leading-5 text-[#777777]">
-                  [SHOP BIO] - Fashion, bags &amp; accessories. Quality pieces
-                  at great prices.
+                  {store.description || store.tagline}
                 </p>
               </div>
             </section>
@@ -258,6 +314,7 @@ export default function Page() {
                 gridVariants={productGridVariants}
                 cardVariants={productCardVariants}
                 onProductClick={handleProductClick}
+                whatappNumber={store?.whatsapp_number || ""}
               />
             ) : hasSearch ? (
               <div className="h-full py-[88px]">
@@ -288,7 +345,10 @@ export default function Page() {
 
           {/* Pagination */}
           <div className="px-5 pb-20">
-            <PaginationNavigator totalPages={0} loading={false} />
+            {/* <PaginationNavigator
+              pagination={productsData?.data?.pagination}
+              loading={productsLoading || productsFetching}
+            /> */}
           </div>
         </div>
       </main>
@@ -328,7 +388,20 @@ export default function Page() {
           <ViewProductDetails
             product={selectedProduct}
             onClose={handleCloseProductModal}
-            onConfirm={() => {}}
+            storeTheme={storeTheme}
+            onConfirm={() => {
+              if (!selectedProduct) return;
+
+              const productUrl = `${process.env.NEXT_PUBLIC_APP_URL}/store/${slug}/products/${selectedProduct.id}`;
+
+              openWhatsApp({
+                phone: store?.whatsapp_number,
+                message: `Hi ${store?.name ?? ""}, I'm interested in this product:
+
+${selectedProduct.name}
+${productUrl}`,
+              });
+            }}
           />
         )}
       </Modal>

@@ -45,3 +45,33 @@ export async function GET() {
     status: response.status,
   });
 }
+
+export async function PUT(request: Request) {
+  try {
+    const formData = await request.formData();
+
+    const response = await backendFetch("/customer/v1/store", {
+      method: "PUT",
+      authenticated: true,
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    return NextResponse.json(data, {
+      status: response.status,
+    });
+  } catch (error) {
+    console.error("Update store error:", error);
+
+    return NextResponse.json(
+      {
+        code: 500,
+        message: "Unable to update store.",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}

@@ -101,9 +101,7 @@ export default function ShareSheet({
           >
             <div className="mx-auto mb-5 h-1.5 w-14 rounded-full bg-gray-300" />
 
-            <h2 className="mb-8 text-center text-lg font-semibold">
-              Share Product
-            </h2>
+            <h2 className="mb-8 text-center text-lg font-semibold">{title}</h2>
 
             <div className="grid grid-cols-4 gap-y-8">
               <Item

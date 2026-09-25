@@ -4,6 +4,7 @@ import { StoreProduct } from "@/types/store-product";
 import { StoreTheme } from "@/types/store-theme";
 import { motion, Variants } from "framer-motion";
 import ProductCard from "./ProductCard";
+import { openWhatsApp } from "@/utils/whatsapp";
 
 interface ProductGridProps {
   products: StoreProduct[];
@@ -11,6 +12,7 @@ interface ProductGridProps {
   animationKey: string;
   gridVariants: Variants;
   cardVariants: Variants;
+  whatappNumber: string;
   onProductClick: (product: StoreProduct) => void;
 }
 
@@ -44,7 +46,10 @@ export default function ProductGrid({
   gridVariants,
   cardVariants,
   onProductClick,
+  whatappNumber,
 }: ProductGridProps) {
+  console.log(products);
+
   return (
     <motion.div
       key={`${animationKey}-${storeTheme.productLayout}`}
@@ -61,6 +66,12 @@ export default function ProductGrid({
           storeTheme={storeTheme}
           variants={cardVariants}
           onClick={() => onProductClick(product)}
+          onClickWhatappBtn={() => {
+            openWhatsApp({
+              phone: whatappNumber,
+              message: `Hi, I'm interested in *${product.name}*.`,
+            });
+          }}
         />
       ))}
     </motion.div>

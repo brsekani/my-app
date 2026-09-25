@@ -5,10 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import back from "@/assets/svgs/back.svg";
 import removeImage from "@/assets/svgs/remove-image.svg";
 
-import Image, { StaticImageData } from "next/image";
-
-import testImage from "@/assets/Images/test-image.jpg";
-import testImage2 from "@/assets/Images/test-image-2.png";
+import Image from "next/image";
 
 import { FormikProvider, useFormik } from "formik";
 
@@ -30,6 +27,45 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import ProductDetailsSkeleton from "@/components/skeletons/ProductDetailsSkeleton";
 import EmptyState from "@/components/EmptyState";
+import { generateProductDescription } from "@/utils/generateProductDescription";
+import { useGetCustomerStoreQuery } from "@/redux/api/storeApi";
+import { getCurrencyInfo } from "@/utils/currency";
+
+type ProductPhoto = string | File | null;
+
+function ProductImage({
+  image,
+  alt,
+  className,
+}: {
+  image: ProductPhoto;
+  alt: string;
+  className?: string;
+}) {
+  const [src, setSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!image) {
+      setSrc(null);
+      return;
+    }
+
+    if (image instanceof File) {
+      const objectUrl = URL.createObjectURL(image);
+      setSrc(objectUrl);
+
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    }
+
+    setSrc(image);
+  }, [image]);
+
+  if (!src) return null;
+
+  return <Image src={src} alt={alt} fill className={className} />;
+}
 
 export default function Page() {
   const { id } = useParams<{ id: string }>();
@@ -38,58 +74,73 @@ export default function Page() {
   const { data, isLoading, error } = useGetProductByIdQuery(id);
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
-  console.log(data);
+  const {
+    data: userData,
+    isLoading: userDataLoading,
+    isError,
+  } = useGetCustomerStoreQuery();
+
+  const currency = userData?.data?.store?.currency ?? "NGN";
+
+  const { code, symbol } = getCurrencyInfo(currency);
 
   const existingProduct = data?.data?.product;
-  const existingImages = existingProduct?.photos || [];
+  const existingImages: ProductPhoto[] =
+    existingProduct?.photos?.map((photo: string) => photo || null) ?? [];
+
+  console.log(existingImages);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [isEdit, setIsEdit] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const [previewImages, setPreviewImages] = useState<any[]>(existingImages);
+  const [previewImages, setPreviewImages] = useState<ProductPhoto[]>([]);
+  const [selectedImage, setSelectedImage] = useState<ProductPhoto>(null);
 
-  const [selectedImage, setSelectedImage] = useState<any>(
-    existingImages[0] || null,
-  );
+  const activeImageCount = previewImages.filter(Boolean).length;
+  console.log(existingProduct?.price);
+
+  console.log("SUBMIT STARTED");
+  console.log("isUpdating before request:", isUpdating);
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      images: existingImages as (File | string | StaticImageData)[],
+      images: existingImages,
       productName: existingProduct?.name || "",
       description: existingProduct?.description || "",
-      price: {
-        currency: existingProduct?.price?.currency || "NGN",
-        amount: existingProduct?.price
-          ? Number(existingProduct.price).toLocaleString("en-NG")
-          : "",
-      },
+      stockQuantity: existingProduct?.stock_quantity || 1,
+      price: existingProduct?.price || "",
     },
 
     validationSchema: productSchema,
 
     onSubmit: async (values, { resetForm }) => {
+      console.log("SUBMIT STARTED");
+      console.log("isUpdating before request:", isUpdating);
+
       try {
         const formData = new FormData();
 
         formData.append("name", values.productName);
         formData.append("description", values.description);
-        formData.append(
-          "price",
-          values.price.amount.replace(/,/g, ""), // remove commas
-        );
+        formData.append("price", String(values.price).replace(/,/g, ""));
 
         // dummy values for now
         formData.append("compare_at_price", "0");
-        formData.append("stock_quantity", "100");
-        formData.append("status", "DRAFT");
+        formData.append("stock_quantity", String(values.stockQuantity));
+        // formData.append("status", "DRAFT");
 
         // Only upload NEW images
-        values.images.forEach((image) => {
+        values.images.forEach((image, index) => {
+          if (image === null) {
+            formData.append(`photos[${index}]`, "");
+            return;
+          }
+
           if (image instanceof File) {
-            formData.append("photos[]", image);
+            formData.append(`photos[${index}]`, image);
           }
         });
 
@@ -116,12 +167,6 @@ export default function Page() {
     dirty,
   } = formik;
 
-  useEffect(() => {
-    if (!selectedImage && previewImages.length > 0) {
-      setSelectedImage(previewImages[0]);
-    }
-  }, [previewImages, selectedImage]);
-
   const handleClick = () => {
     inputRef.current?.click();
   };
@@ -131,34 +176,80 @@ export default function Page() {
 
     if (!files.length) return;
 
-    const totalImages = previewImages.length + files.length;
+    const activeImageCount = previewImages.filter(Boolean).length;
 
-    if (totalImages > 3) return;
+    if (activeImageCount + files.length > 3) {
+      e.target.value = "";
+      return;
+    }
 
-    const previewUrls = files.map((file) => URL.createObjectURL(file));
+    const updatedImages = [...previewImages];
 
-    setFieldValue("images", [...values.images, ...files]);
+    files.forEach((file) => {
+      const emptyIndex = updatedImages.findIndex((image) => image === null);
 
-    setPreviewImages((prev) => [...prev, ...previewUrls]);
+      if (emptyIndex !== -1) {
+        updatedImages[emptyIndex] = file;
+      } else if (updatedImages.length < 3) {
+        updatedImages.push(file);
+      }
+    });
+
+    setPreviewImages(updatedImages);
+    setFieldValue("images", updatedImages);
 
     if (!selectedImage) {
-      setSelectedImage(previewUrls[0]);
+      setSelectedImage(updatedImages.find(Boolean) ?? null);
     }
+
+    e.target.value = "";
   };
 
   const handleRemove = (index: number) => {
-    const updatedPreviews = previewImages.filter((_, i) => i !== index);
+    const updatedImages = [...previewImages];
 
-    const updatedImages = values.images.filter((_, i) => i !== index);
+    const removedImage = updatedImages[index];
 
-    setPreviewImages(updatedPreviews);
+    updatedImages[index] = null;
 
+    setPreviewImages(updatedImages);
     setFieldValue("images", updatedImages);
 
-    if (selectedImage === previewImages[index]) {
-      setSelectedImage(updatedPreviews[0] || null);
+    if (selectedImage === removedImage) {
+      setSelectedImage(updatedImages.find(Boolean) ?? null);
     }
   };
+
+  const handleCancelEdit = () => {
+    const photos: ProductPhoto[] =
+      existingProduct?.photos?.map((photo: string) => photo || null) ?? [];
+
+    setPreviewImages(photos);
+    setSelectedImage(photos.find(Boolean) ?? null);
+
+    formik.resetForm();
+
+    setIsEdit(false);
+  };
+
+  const handleGenerateDescription = () => {
+    if (!values.productName.trim()) return;
+
+    const description = generateProductDescription(values.productName);
+
+    formik.setFieldValue("description", description);
+  };
+
+  useEffect(() => {
+    if (!existingProduct) return;
+
+    const photos: ProductPhoto[] = (existingProduct.photos ?? []).map(
+      (photo) => photo || null,
+    );
+
+    setPreviewImages(photos);
+    setSelectedImage(photos.find(Boolean) ?? null);
+  }, [existingProduct]);
 
   if (isLoading) {
     return <ProductDetailsSkeleton />;
@@ -175,16 +266,19 @@ export default function Page() {
     );
   }
 
+  console.log(formik);
+
   return (
     <FormikProvider value={formik}>
-      <div className="leading-[100%] space-y-6">
-        <div className="flex items-center gap-2">
-          <Image src={back} alt="back" />
-
-          <p className="text-[16px] font-medium text-[#111111] underline">
-            Back
-          </p>
-        </div>
+      <div className="leading-[100%] space-y-6 pb-5">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-[16px] font-medium text-[#111111] underline"
+        >
+          <Image src={back} alt="" />
+          <span>Back</span>
+        </button>
 
         <hr className="w-full border-[#E5E5E5]" />
 
@@ -194,7 +288,7 @@ export default function Page() {
               {isEdit ? (
                 <button
                   type="button"
-                  onClick={() => setIsEdit(false)}
+                  onClick={handleCancelEdit}
                   className="text-[#111111] underline cursor-pointer"
                 >
                   Cancel
@@ -241,10 +335,9 @@ export default function Page() {
               className="relative w-full h-[370px] overflow-hidden rounded-[8px] border border-[#E5E5E5] bg-[#FAFAFA]"
             >
               {selectedImage ? (
-                <Image
-                  src={selectedImage}
+                <ProductImage
+                  image={selectedImage}
                   alt="product-image"
-                  fill
                   className="object-cover"
                 />
               ) : (
@@ -268,46 +361,49 @@ export default function Page() {
 
             {/* THUMBNAILS */}
             <div className="flex gap-[2%]">
-              {previewImages.map((image, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setSelectedImage(image)}
-                  className={`relative w-[32%] min-h-20 h-full aspect-square overflow-hidden rounded-[8px] border transition-all ${
-                    selectedImage === image
-                      ? "border-[#68DB25]"
-                      : "border-[#E5E5E5]"
-                  }`}
-                >
-                  <Image
-                    src={image}
-                    alt={`preview-${index}`}
-                    fill
-                    className="object-cover"
-                  />
+              {previewImages.map((image, index) => {
+                if (image === null || image === "" || image === undefined) {
+                  return null;
+                }
 
-                  {isEdit && (
-                    <div
-                      // type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemove(index);
-                      }}
-                      className="absolute top-1 right-1 z-10 flex items-center justify-center rounded-full bg-white shadow-md p-1"
-                    >
-                      <Image
-                        src={removeImage}
-                        alt="remove"
-                        width={16}
-                        height={16}
-                        className="w-4 h-4"
-                      />
-                    </div>
-                  )}
-                </button>
-              ))}
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setSelectedImage(image)}
+                    className={`relative w-[32%] min-h-20 aspect-square overflow-hidden rounded-[8px] border transition-all ${
+                      selectedImage === image
+                        ? "border-[#68DB25]"
+                        : "border-[#E5E5E5]"
+                    }`}
+                  >
+                    <ProductImage
+                      image={image}
+                      alt={`preview-${index}`}
+                      className="object-cover"
+                    />
+                    {isEdit && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemove(index);
+                        }}
+                        className="absolute top-1 right-1 z-10 flex items-center justify-center rounded-full bg-white p-1 shadow-md"
+                      >
+                        <Image
+                          src={removeImage}
+                          alt="remove"
+                          width={16}
+                          height={16}
+                          className="h-4 w-4"
+                        />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
 
-              {isEdit && previewImages.length < 3 && (
+              {isEdit && activeImageCount < 3 && (
                 <button
                   type="button"
                   onClick={handleClick}
@@ -425,7 +521,43 @@ export default function Page() {
                 name="price"
                 label="Price"
                 disabled={!isEdit}
+                mode="amount"
+                currencyCode={code}
+                currencySymbol={symbol}
               />
+
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[14px] text-[#111111]">
+                    Stock available
+                  </label>
+                </div>
+
+                <input
+                  type="text"
+                  name="stockQuantity"
+                  inputMode="numeric"
+                  pattern="[1-9][0-9]*"
+                  placeholder={"e.g. 25"}
+                  value={values.stockQuantity}
+                  disabled={!isEdit}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    // Allow empty while typing, or positive whole numbers only
+                    if (value === "" || /^[1-9][0-9]*$/.test(value)) {
+                      formik.setFieldValue("stockQuantity", value);
+                    }
+                  }}
+                  maxLength={10}
+                  onBlur={handleBlur}
+                  className="w-full bg-[#F5F5F5] rounded px-[14px] py-3 text-[14px] outline-none border border-transparent focus:ring-1 focus:ring-[#A7E981] disabled:opacity-50"
+                />
+
+                {errors.stockQuantity && touched.stockQuantity && (
+                  <p className="text-red-500 text-xs">{errors.stockQuantity}</p>
+                )}
+              </div>
 
               {/* DESCRIPTION */}
               <div className="flex flex-col gap-2">
@@ -450,6 +582,21 @@ export default function Page() {
 
                   {errors.description && touched.description && (
                     <p className="text-red-500 text-xs">{errors.description}</p>
+                  )}
+                </div>
+
+                <div className="w-full flex justify-end -mt-1">
+                  {values.productName.trim() && isEdit && (
+                    <button
+                      type="button"
+                      onClick={handleGenerateDescription}
+                      className="group inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] font-medium text-[#111111] bg-[#7ed957] hover:bg-[#5fc23e] active:scale-[0.98] transition-all duration-200"
+                    >
+                      <span className="text-[13px] transition-transform duration-200 group-hover:rotate-12">
+                        ✨
+                      </span>
+                      <span>Generate description</span>
+                    </button>
                   )}
                 </div>
               </div>

@@ -73,7 +73,7 @@ function SelectContent({
         position={position}
         sideOffset={sideOffset}
         className={cn(
-          "relative z-50 max-h-72 min-w-[80px] overflow-y-auto rounded-md border bg-white shadow-md",
+          "relative z-50 w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)] max-h-72 overflow-y-auto rounded-md border bg-white shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
           "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
@@ -82,7 +82,7 @@ function SelectContent({
         )}
         {...props}
       >
-        <SelectPrimitive.Viewport className="p-1">
+        <SelectPrimitive.Viewport className="w-full p-1">
           {children}
         </SelectPrimitive.Viewport>
       </SelectPrimitive.Content>

@@ -14,8 +14,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLogoutMutation } from "@/redux/api/authApi";
 import { useRouter } from "next/navigation";
+import { useGetCustomerStoreQuery } from "@/redux/api/storeApi";
 
 export default function DashboardHeader() {
+  const {
+    data: userData,
+    isLoading: userDataLoading,
+    isError,
+    error,
+  } = useGetCustomerStoreQuery();
+
   const router = useRouter();
   const [logout] = useLogoutMutation();
 
@@ -50,7 +58,11 @@ export default function DashboardHeader() {
             <div className="flex flex-col">
               <span className="font-semibold">My Account</span>
               <span className="text-xs text-muted-foreground">
-                lawaltemidayo06@gmail.com
+                {userDataLoading ? (
+                  <span className="inline-block h-3 w-32 animate-pulse rounded bg-[#E5E7EB]" />
+                ) : (
+                  userData?.data?.store?.email
+                )}
               </span>
             </div>
           </DropdownMenuLabel>
