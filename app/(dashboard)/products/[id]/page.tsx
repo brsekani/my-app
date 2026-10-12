@@ -72,6 +72,7 @@ export default function Page() {
   const router = useRouter();
 
   const { data, isLoading, error } = useGetProductByIdQuery(id);
+  console.log(data);
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
   const {
@@ -130,7 +131,7 @@ export default function Page() {
         // dummy values for now
         formData.append("compare_at_price", "0");
         formData.append("stock_quantity", String(values.stockQuantity));
-        // formData.append("status", "DRAFT");
+        // formData.append("status", "DRAFT")
 
         // Only upload NEW images
         values.images.forEach((image, index) => {

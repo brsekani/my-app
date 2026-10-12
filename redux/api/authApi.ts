@@ -5,6 +5,8 @@ import type {
   LoginResponse,
   SignupRequest,
   SignupResponse,
+  SocialLoginRequest,
+  SocialLoginResponse,
 } from "@/types/auth";
 
 export const authApi = baseApi.injectEndpoints({
@@ -17,6 +19,14 @@ export const authApi = baseApi.injectEndpoints({
       }),
 
       invalidatesTags: ["Auth"],
+    }),
+
+    socialLogin: builder.mutation<SocialLoginResponse, SocialLoginRequest>({
+      query: (body) => ({
+        url: "/customer/auth/social",
+        method: "POST",
+        body,
+      }),
     }),
 
     loginCustomer: builder.mutation<LoginResponse, LoginRequest>({
@@ -57,6 +67,7 @@ export const authApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useSocialLoginMutation,
   useRegisterCustomerMutation,
   useLoginCustomerMutation,
   useVerifyEmailMutation,

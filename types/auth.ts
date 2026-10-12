@@ -61,3 +61,19 @@ export interface LoginResponse {
     requires_two_factor?: boolean;
   };
 }
+
+export interface SocialLoginRequest {
+  provider: "GOOGLE" | "APPLE";
+  access_token: string;
+}
+
+export interface SocialLoginResponse {
+  code: number;
+  message: string;
+  data: {
+    user: Record<string, unknown>;
+    token: string;
+    roles: string[];
+    permissions: string[];
+  };
+}

@@ -1,16 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { useField } from "formik";
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 import currencyCodes from "currency-codes";
-import { Search, X } from "lucide-react";
+
+import { ChevronDown, Search, X } from "lucide-react";
 
 const currencies = currencyCodes.data
   .map((currency) => ({
@@ -57,7 +59,9 @@ export default function CustomAmountInput({
   currencySymbol = "₦",
 }: Props) {
   const [field, meta, helpers] = useField(name);
+
   const [search, setSearch] = useState("");
+  const [currencyOpen, setCurrencyOpen] = useState(false);
 
   console.log(field);
 
@@ -79,15 +83,30 @@ export default function CustomAmountInput({
 
   const formatAmount = (value: string) => {
     const numbersOnly = value.replace(/\D/g, "");
+
     return numbersOnly.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+  useEffect(() => {
+    if (
+      mode !== "amount" &&
+      (!value || typeof value !== "object" || !value.currency)
+    ) {
+      helpers.setValue({
+        ...(typeof value === "object" && value !== null ? value : {}),
+        currency: currencyCode || "NGN",
+      });
+    }
+  }, [mode, value, currencyCode, helpers]);
+
   return (
     <div className="w-full space-y-2">
-      {label && <label className="text-[14px] text-[#111111]">{label}</label>}{" "}
+      {label && <label className="text-[14px] text-[#111111]">{label}</label>}
+
       {mode !== "currency" && (
         <span className="text-sm text-[#111111]">({currencyCode})</span>
       )}
+
       <div className="space-y-0.5">
         <div
           className={`w-full ${
@@ -96,43 +115,44 @@ export default function CustomAmountInput({
         >
           {/* Currency */}
           {mode !== "amount" && (
-            <Select
-              value={value.currency}
-              defaultValue="NGN"
-              onValueChange={(currency) => {
-                helpers.setValue({
-                  ...value,
-                  currency,
-                });
+            <Popover
+              open={currencyOpen}
+              onOpenChange={(open) => {
+                setCurrencyOpen(open);
 
-                setSearch("");
+                if (!open) {
+                  setSearch("");
+                }
               }}
-              disabled={disabled}
             >
-              <SelectTrigger
-                className={`!h-[45px] rounded bg-[#F5F5F5] border-none shadow-none focus:ring-0 disabled:bg-[#F8F8F8] disabled:text-[#B0B0B0] disabled:border-[#E5E5E5] disabled:cursor-not-allowed ${
-                  mode === "both" ? "!w-[76px]" : "!w-full"
-                }`}
-              >
-                <SelectValue placeholder="Currency" />
-              </SelectTrigger>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  className={`flex h-[45px] items-center justify-between rounded bg-[#F5F5F5] px-3 text-left shadow-none outline-none transition-all disabled:cursor-not-allowed disabled:bg-[#F8F8F8] disabled:text-[#B0B0B0] ${
+                    mode === "both" ? "w-[76px]" : "w-full"
+                  }`}
+                >
+                  <span className="truncate text-[14px] text-[#111111]">
+                    {value?.currency || currencyCode}
+                  </span>
 
-              <SelectContent
+                  <ChevronDown
+                    size={16}
+                    strokeWidth={1.8}
+                    className="ml-1 shrink-0 text-[#777777]"
+                  />
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent
                 side="bottom"
                 sideOffset={6}
-                position="popper"
                 align="start"
-                className="w-[300px] max-h-[340px] overflow-hidden p-0"
+                className="md:max-w-[1000px] max-w-[250px]  w-full max-h-[340px] overflow-hidden rounded-md border border-[#E5E5E5] bg-white p-0 shadow-md"
               >
                 {/* Search */}
-                <div
-                  className="sticky top-0 z-10 border-b border-[#EEEEEE] bg-white p-2"
-                  onKeyDown={(e) => e.stopPropagation()}
-                  onKeyUp={(e) => e.stopPropagation()}
-                  onKeyPress={(e) => e.stopPropagation()}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <div className="sticky top-0 z-10 border-b border-[#EEEEEE] bg-white p-2">
                   <div className="relative">
                     <Search
                       size={15}
@@ -143,18 +163,23 @@ export default function CustomAmountInput({
                     <input
                       type="text"
                       value={search}
-                      onChange={(e) => setSearch(e.target.value)}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
+                      }}
                       placeholder="Search currency..."
                       autoComplete="off"
-                      onKeyDown={(e) => e.stopPropagation()}
-                      onKeyUp={(e) => e.stopPropagation()}
-                      onKeyPress={(e) => e.stopPropagation()}
+                      autoCorrect="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
                       className="h-9 w-full rounded-md border border-[#E8E8E8] bg-[#F8F8F8] pl-9 pr-9 text-[13px] text-[#111111] outline-none transition-all placeholder:text-[#999999] focus:border-[#D6D6D6] focus:bg-white"
                     />
+
                     {search && (
                       <button
                         type="button"
-                        onClick={() => setSearch("")}
+                        onClick={() => {
+                          setSearch("");
+                        }}
                         className="absolute right-2.5 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md text-[#888888] transition-colors hover:bg-[#EEEEEE] hover:text-[#111111]"
                       >
                         <X size={14} />
@@ -166,30 +191,45 @@ export default function CustomAmountInput({
                 {/* Currency list */}
                 <div className="max-h-[285px] overflow-y-auto p-1">
                   {filteredCurrencies.length > 0 ? (
-                    filteredCurrencies.map((currency) => (
-                      <SelectItem
-                        key={currency.code}
-                        value={currency.code}
-                        className="rounded-md px-2.5 py-2.5"
-                      >
-                        <div className="flex w-full min-w-0 items-center gap-3">
-                          {/* Currency name */}
-                          <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[#111111]">
-                            {currency.currency}
-                          </span>
+                    filteredCurrencies.map((currency) => {
+                      const isSelected = value?.currency === currency.code;
 
-                          {/* Currency code */}
-                          <span className="shrink-0 text-[11px] font-medium uppercase tracking-wide text-[#8A8A8A]">
-                            {currency.code}
-                          </span>
+                      return (
+                        <button
+                          key={currency.code}
+                          type="button"
+                          onClick={() => {
+                            helpers.setValue({
+                              ...value,
+                              currency: currency.code,
+                            });
 
-                          {/* Currency symbol */}
-                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#F5F5F5] text-[13px] font-semibold text-[#111111]">
-                            {getCurrencySymbol(currency.code)}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))
+                            setCurrencyOpen(false);
+                            setSearch("");
+                          }}
+                          className={`relative flex w-full items-center rounded-md px-2.5 py-2.5 text-left outline-none transition-colors hover:bg-[#F5F5F5] ${
+                            isSelected ? "bg-[#F5F5F5]" : ""
+                          }`}
+                        >
+                          <div className="flex w-full min-w-0 items-center gap-3">
+                            {/* Currency name */}
+                            <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-[#111111]">
+                              {currency.currency}
+                            </span>
+
+                            {/* Currency code */}
+                            <span className="shrink-0 text-[11px] font-medium uppercase tracking-wide text-[#8A8A8A]">
+                              {currency.code}
+                            </span>
+
+                            {/* Currency symbol */}
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#F5F5F5] text-[13px] font-semibold text-[#111111]">
+                              {getCurrencySymbol(currency.code)}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })
                   ) : (
                     <div className="flex flex-col items-center justify-center px-4 py-8 text-center">
                       <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#F5F5F5]">
@@ -206,8 +246,8 @@ export default function CustomAmountInput({
                     </div>
                   )}
                 </div>
-              </SelectContent>
-            </Select>
+              </PopoverContent>
+            </Popover>
           )}
 
           {/* Amount */}
@@ -241,7 +281,11 @@ export default function CustomAmountInput({
                 helpers.setValue(formatted);
               }}
               onBlur={() => helpers.setTouched(true)}
-              className={`h-[45px] w-full rounded border bg-[#F5F5F5] px-4 text-[14px] text-[#111111] outline-none transition-all duration-200 placeholder:text-[#6B6B6B] disabled:cursor-not-allowed disabled:border-[#E5E5E5] disabled:bg-[#F8F8F8] disabled:text-[#B0B0B0] ${hasError ? "border-red-500 focus:ring-1 focus:ring-red-500" : "border-transparent focus:ring-1 focus:ring-[#A7E981]"}`}
+              className={`h-[45px] w-full rounded border bg-[#F5F5F5] px-4 text-[14px] text-[#111111] outline-none transition-all duration-200 placeholder:text-[#6B6B6B] disabled:cursor-not-allowed disabled:border-[#E5E5E5] disabled:bg-[#F8F8F8] disabled:text-[#B0B0B0] ${
+                hasError
+                  ? "border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-transparent focus:ring-1 focus:ring-[#A7E981]"
+              }`}
             />
           )}
         </div>

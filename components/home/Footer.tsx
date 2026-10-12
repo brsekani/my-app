@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#F5F5F5] w-full">
+    <footer className="bg-[#F5F5F5] w-full py-15">
       <div className="max-w-360 w-full mx-auto md:px-[60px] md:py-0 py-10 px-5 flex flex-col md:flex-row gap-7 md:items-end items-start justify-between leading-[100%] text-[#111111]">
         <p className="text-[14px]">© {new Date().getFullYear()} PRODUCT NAME</p>
 

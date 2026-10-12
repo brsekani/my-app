@@ -6,7 +6,7 @@ import { FormikProvider, useFormik } from "formik";
 import { useRef } from "react";
 
 import Badge from "@/components/Badge";
-import shoppingIcon from "@/assets/svgs/shopping-cart.svg";
+import addGreen from "@/assets/svgs/add-green.svg";
 import pictureIcon from "@/assets/svgs/picture.svg";
 import addIcon from "@/assets/svgs/add.svg";
 import removeImage from "@/assets/svgs/remove-image.svg";
@@ -16,10 +16,40 @@ import { productSchema } from "@/schemas";
 import { useRouter } from "next/navigation";
 import { useCreateProductMutation } from "@/redux/api/productApi";
 import { generateProductDescription } from "@/utils/generateProductDescription";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 type AddProductDrawerProps = {
   onClose: () => void;
 };
+
+const categories = [
+  {
+    id: 1,
+    name: "Electronics",
+  },
+  {
+    id: 2,
+    name: "Fashion",
+  },
+  {
+    id: 3,
+    name: "Beauty",
+  },
+  {
+    id: 4,
+    name: "Food & Beverages",
+  },
+  {
+    id: 5,
+    name: "Home & Living",
+  },
+];
 
 export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
   const [createProduct, { isLoading }] = useCreateProductMutation();
@@ -34,6 +64,7 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
       stockQuantity: "1",
       unlimitedStock: false,
       price: "",
+      category: "",
     },
 
     validationSchema: productSchema,
@@ -254,6 +285,60 @@ export default function AddProductDrawer({ onClose }: AddProductDrawerProps) {
               mode={"amount"}
               max={100_000_000}
             />
+
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <label className="text-[14px] text-[#111111]">
+                  Category{" "}
+                  <span className="text-[#777777] text-[12px] font-light">
+                    (Optional)
+                  </span>
+                </label>
+              </div>
+
+              <Select
+                value={values.category}
+                onValueChange={(value) => {
+                  formik.setFieldValue("category", value);
+                }}
+                disabled={!categories?.length}
+              >
+                <SelectTrigger className="w-full !h-[45px] bg-[#F5F5F5] rounded px-[14px] text-[14px] outline-none border border-transparent focus:ring-1 focus:ring-[#A7E981] disabled:opacity-50 disabled:cursor-not-allowed">
+                  <SelectValue
+                    placeholder={
+                      categories?.length
+                        ? "Select category"
+                        : "No categories available"
+                    }
+                  />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {categories?.map((category) => (
+                    <SelectItem key={category.id} value={String(category.id)}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {errors.category && touched.category && (
+                <p className="text-red-500 text-xs">{errors.category}</p>
+              )}
+
+              {!categories?.length && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Open create category modal
+                  }}
+                  className="flex items-center gap-1 text-[#68DB25] text-[12px] font-medium cursor-pointer w-fit"
+                >
+                  <Image src={addGreen} alt="add" />
+                  <p>Create Category</p>
+                </button>
+              )}
+            </div>
 
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">

@@ -8,8 +8,8 @@ export interface Pagination {
   previous_page: number | null;
   total: number;
   per_page: number;
-  from: number;
-  to: number;
+  from: number | null;
+  to: number | null;
 }
 
 interface PaginationNavigatorProps {

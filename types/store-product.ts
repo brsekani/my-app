@@ -79,9 +79,14 @@ export interface StoreProduct {
 
 export interface StoreProductsPagination {
   current_page: number;
+  first_page: number;
   last_page: number;
-  per_page: number;
+  next_page: number | null;
+  previous_page: number | null;
   total: number;
+  per_page: number;
+  from: number | null;
+  to: number | null;
 }
 
 export interface PublicStoreProductsResponse {

@@ -44,8 +44,6 @@ export default function ProductCard({
 
   const isEditorial = storeTheme.productLayout === "editorial";
 
-  const isFeatured = storeTheme.productLayout === "showcase" && index === 0;
-
   return (
     <motion.article
       variants={variants}
@@ -57,9 +55,7 @@ export default function ProductCard({
         },
       }}
       whileTap={{ scale: 0.98 }}
-      className={`${classes.card} ${
-        isFeatured ? "col-span-2 row-span-2 md:col-span-2" : ""
-      }`}
+      className={`${classes.card}`}
     >
       <div
         className={classes.clickableArea}
@@ -73,42 +69,37 @@ export default function ProductCard({
           }
         }}
       >
-        <div
-          className={`${classes.imageWrapper} ${
-            isFeatured ? "min-h-[340px] md:min-h-[460px]" : ""
-          }`}
-        >
+        <div className={`${classes.imageWrapper} `}>
           <motion.div
-            className="relative h-full w-full"
+            className="relative h-full w-full relative"
             whileHover={{ scale: 1.06 }}
             transition={{
               duration: 0.35,
               ease: "easeOut",
             }}
           >
+            <p
+              className="text-[#111111] text-[12px] px-3 py-1 bg-[#FFFFFFC4] border w-fit rounded-[100px] border-[#E5E5E5] backdrop-blur-[30px] absolute top-4 right-4 z-10"
+              style={{
+                backgroundColor: isDefault
+                  ? "rgba(255,255,255,0.77)"
+                  : `${storeTheme.backgroundColor}CC`,
+                borderColor: isDefault
+                  ? "#E5E5E5"
+                  : `${storeTheme.brandColor}40`,
+                color: isDefault ? "#111111" : storeTheme.brandColor,
+              }}
+            >
+              Fashion
+            </p>
             <Image
-              src={product?.photo || "/images/product-placeholder.png"}
+              src={product?.photo || "/global-bag.png"}
               alt={product.name}
               fill
               className="object-cover"
-              sizes={
-                isFeatured
-                  ? "(min-width: 1024px) 50vw, 100vw"
-                  : "(min-width: 1280px) 251px, (min-width: 768px) 33vw, 50vw"
-              }
+              sizes={"(min-width: 1280px) 251px, (min-width: 768px) 33vw, 50vw"}
             />
           </motion.div>
-
-          {isFeatured && (
-            <span
-              className="absolute left-4 top-4 rounded-full px-3 py-1.5 text-[11px] font-semibold text-white"
-              style={{
-                backgroundColor: storeTheme.brandColor,
-              }}
-            >
-              Featured
-            </span>
-          )}
         </div>
 
         <div className={classes.content}>

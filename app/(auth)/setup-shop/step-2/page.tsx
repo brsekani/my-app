@@ -64,7 +64,7 @@ export default function SetupShopStep2Page() {
         currency: formValues.currency.currency,
       }).unwrap();
 
-      console.log("Store created:", response);
+      resetShop();
 
       router.replace("/setup-shop/step-2/shop-ready");
     } catch (error: any) {

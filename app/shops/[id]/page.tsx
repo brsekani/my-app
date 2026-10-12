@@ -345,10 +345,10 @@ export default function Page() {
 
           {/* Pagination */}
           <div className="px-5 pb-20">
-            {/* <PaginationNavigator
+            <PaginationNavigator
               pagination={productsData?.data?.pagination}
               loading={productsLoading || productsFetching}
-            /> */}
+            />
           </div>
         </div>
       </main>

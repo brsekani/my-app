@@ -10,12 +10,14 @@ import copy from "@/assets/svgs/copy.svg";
 import share from "@/assets/svgs/share.svg";
 import close from "@/assets/svgs/close.svg";
 import searchImg from "@/assets/svgs/search.svg";
+import arrowDown from "@/assets/svgs/arrow-down.svg";
+import matchNotFound from "@/assets/svgs/match-not-found.svg";
+
 import PaginationNavigator from "@/components/PaginationNavigator";
 import Drawer from "@/components/Drawer";
 import AddProductDrawer from "@/components/AddProductDrawer";
 import testImage from "@/assets/Images/test-image.jpg";
 import nothingHere from "@/assets/svgs/nothing-here.svg";
-import matchNotFound from "@/assets/svgs/match-not-found.svg";
 import Link from "next/link";
 import { useGetProductsQuery } from "@/redux/api/productApi";
 import { getImageUrl } from "@/lib/get-image-url";
@@ -23,6 +25,13 @@ import ProductCardSkeleton from "@/components/skeletons/ProductCardSkeleton";
 import ShareSheet from "@/components/ShareSheet";
 import { useGetCustomerStoreQuery } from "@/redux/api/storeApi";
 import { getCurrencyInfo } from "@/utils/currency";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function DashboardContent() {
   const router = useRouter();
@@ -185,6 +194,25 @@ export default function DashboardContent() {
         />
       </form>
 
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="border border-[#111111] rounded-[100px] flex items-center gap-1 py-1.5 px-3.5 text-[14px] font-medium outline-none">
+              <p>All</p>
+              <Image src={arrowDown} alt="arrow-icon" />
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="start" className="min-w-[160px]">
+            <DropdownMenuItem>All</DropdownMenuItem>
+            <DropdownMenuItem>Electronics</DropdownMenuItem>
+            <DropdownMenuItem>Fashion</DropdownMenuItem>
+            <DropdownMenuItem>Beauty</DropdownMenuItem>
+            <DropdownMenuItem>Food</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <h5 className="text-[14px] font-semibold text-[#111111]">PRODUCTS</h5>
@@ -216,11 +244,14 @@ export default function DashboardContent() {
             <Link
               href={`/products/${product?.id}`}
               key={product.id}
-              className="md:w-[251.2px] min-w-[166px] h-full p-2 border border-[#E5E5E5] rounded-[8px] space-y-3"
+              className="md:w-[251.2px] min-w-[166px] h-full p-2 border border-[#E5E5E5] rounded-[8px] space-y-3 relative"
             >
+              <p className="text-[#111111] text-[12px] px-3 py-1 bg-[#FFFFFFC4] border w-fit rounded-[100px] border-[#E5E5E5] backdrop-blur-[30px] absolute top-4 right-4 z-10">
+                Fashion
+              </p>
               <div className="relative w-full h-[235px] overflow-hidden rounded-[4px] border border-[#E5E5E5]">
                 <Image
-                  src={product.photo ?? "/images/product-placeholder.png"}
+                  src={product?.photo || "/global-bag.png"}
                   alt={product.name}
                   fill
                   loading="eager"

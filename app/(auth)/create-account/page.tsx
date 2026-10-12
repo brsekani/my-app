@@ -1,10 +1,43 @@
+"use client";
+
 import Badge from "@/components/Badge";
 import SignupForm from "@/components/SignupForm";
 import shoppingIcon from "@/assets/svgs/shopping-cart.svg";
 import googleIcon from "@/assets/svgs/google.svg";
 import Image from "next/image";
+import { useSocialLoginMutation } from "@/redux/api/authApi";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function CreateAccount() {
+  const [socialLogin, { isLoading }] = useSocialLoginMutation();
+
+  const handleGoogleSignup = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(auth, provider);
+      console.log(result);
+
+      const firebaseIdToken = await result.user.getIdToken();
+      console.log(firebaseIdToken);
+
+      const response = await socialLogin({
+        provider: "GOOGLE",
+        access_token: firebaseIdToken,
+      }).unwrap();
+
+      window.location.assign("/");
+
+      console.log("Lumished social login:", response);
+
+      // Continue with your normal authentication flow here.
+      // response.data.token = Lumished Sanctum token
+    } catch (error) {
+      console.error("Google signup failed:", error);
+    }
+  };
+
   return (
     <main className="w-full h-full flex items-center justify-center py-10 px-5">
       <section className="w-full h-fit flex flex-col md:max-w-[640px] items-center justify-center ">
@@ -19,7 +52,11 @@ export default function CreateAccount() {
             Setup your online shop and start sharing your products
           </p>
 
-          <button className="flex items-center gap-2 py-[5.5px] pl-[14px] pr-[6px] border-[#e5e5e5] border-1 rounded-[24px]">
+          <button
+            onClick={handleGoogleSignup}
+            disabled={isLoading}
+            className="flex items-center gap-2 py-[5.5px] pl-[14px] pr-[6px] border-[#e5e5e5] border-1 rounded-[24px]"
+          >
             <span className="font-medium text-[12px] leading-[100%] text-[#777777] uppercase">
               Continue with Google
             </span>

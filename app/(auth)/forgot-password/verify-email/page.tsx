@@ -3,22 +3,31 @@
 import { useState, useRef, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+
 import Badge from "@/components/Badge";
 import sms from "@/assets/svgs/sms-notification.svg";
+import { useVerifyPasswordResetOtpMutation } from "@/redux/api/passwordResetApi";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
   const email = searchParams.get("email") || "your email";
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
+
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+
   const [countdown, setCountdown] = useState(59);
   const [canResend, setCanResend] = useState(false);
+
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const [verifyPasswordResetOtp, { isLoading: verifyingOtp }] =
+    useVerifyPasswordResetOtpMutation();
 
   useEffect(() => {
     inputRefs.current[0]?.focus();
@@ -29,16 +38,23 @@ function VerifyEmailContent() {
       setCanResend(true);
       return;
     }
-    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
+
+    const timer = setTimeout(() => {
+      setCountdown((c) => c - 1);
+    }, 1000);
+
     return () => clearTimeout(timer);
   }, [countdown]);
 
   const handleChange = (index: number, value: string) => {
     const digit = value.replace(/\D/g, "").slice(-1);
+
     const newOtp = [...otp];
     newOtp[index] = digit;
+
     setOtp(newOtp);
     setError("");
+
     if (digit && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -55,46 +71,100 @@ function VerifyEmailContent() {
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
+
     const pasted = e.clipboardData
       .getData("text")
       .replace(/\D/g, "")
       .slice(0, 6);
+
     const newOtp = [...otp];
+
     pasted.split("").forEach((char, i) => {
       newOtp[i] = char;
     });
+
     setOtp(newOtp);
+
     const nextEmpty = newOtp.findIndex((v) => !v);
+
     inputRefs.current[nextEmpty === -1 ? 5 : nextEmpty]?.focus();
   };
 
-  // ✅ handleVerify restored as a proper function
   const handleVerify = async () => {
-    const token = otp.join("");
-    if (token.length < 6) {
+    const otpCode = otp.join("");
+
+    if (otpCode.length !== 6) {
       setError("Please enter the full 6-digit code.");
       return;
     }
-    setLoading(true);
+
+    const pendingToken = sessionStorage.getItem(
+      STORAGE_KEYS.passwordReset.pendingToken,
+    );
+
+    if (!pendingToken) {
+      setError(
+        "Your password reset session has expired. Please request a new code.",
+      );
+      return;
+    }
+
     setError("");
-    setLoading(false);
-    console.log("OTP verified for:", email, "token:", token);
-    router.push("/setup-shop");
+
+    try {
+      const response = await verifyPasswordResetOtp({
+        otp: otpCode,
+        pending_token: pendingToken,
+      }).unwrap();
+
+      sessionStorage.setItem(
+        STORAGE_KEYS.passwordReset.pendingToken,
+        response.data.reset_token,
+      );
+
+      // Pending token is no longer needed
+      sessionStorage.removeItem(STORAGE_KEYS.passwordReset.pendingToken);
+
+      router.replace("/forgot-password/reset");
+    } catch (error: any) {
+      console.error("OTP verification error:", error);
+
+      setError(
+        error?.data?.message ||
+          "Invalid OTP. Please check the code and try again.",
+      );
+    }
   };
 
-  // ✅ handleResend restored as a proper function
   const handleResend = async () => {
+    // We haven't implemented the resend API yet
     if (!canResend) return;
+
     setResending(true);
     setResendSuccess(false);
     setError("");
-    setResending(false);
-    console.log("Resend OTP for:", email);
-    setResendSuccess(true);
-    setOtp(["", "", "", "", "", ""]);
-    setCountdown(59);
-    setCanResend(false);
-    inputRefs.current[0]?.focus();
+
+    try {
+      // TODO:
+      // Call your resend password reset OTP endpoint here.
+
+      setResendSuccess(true);
+
+      setOtp(["", "", "", "", "", ""]);
+
+      setCountdown(59);
+      setCanResend(false);
+
+      inputRefs.current[0]?.focus();
+    } catch (error: any) {
+      console.error("Resend OTP error:", error);
+
+      setError(
+        error?.data?.message || "Unable to resend the code. Please try again.",
+      );
+    } finally {
+      setResending(false);
+    }
   };
 
   const formattedCountdown = `00:${String(countdown).padStart(2, "0")}`;
@@ -102,10 +172,10 @@ function VerifyEmailContent() {
   return (
     <div className="min-h-[90vh] bg-white flex flex-col px-4 py-6 leading-[100%]">
       <main className="flex-1 flex items-center justify-center">
-        <div className=" flex flex-col items-center px-5 gap-6 w-full max-w-[640px]">
-          <Badge imageUrl={sms} text={"OTP SENT"} />
+        <div className="flex flex-col items-center px-5 gap-6 w-full max-w-[640px]">
+          <Badge imageUrl={sms} text="OTP SENT" />
 
-          <h1 className="font-semibold text-center text-gray-900 uppercase gap-6 text-[24px] md:text-[32px]">
+          <h1 className="font-semibold text-center text-gray-900 uppercase text-[24px] md:text-[32px]">
             ENTER THE CODE
           </h1>
 
@@ -132,8 +202,13 @@ function VerifyEmailContent() {
                 value={digit}
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
-                className={`md:text-[20px] text-[14px] gap-2 sm:gap-3 w-[calc((100%-40px)/6)] h-[47px] md:w-15 md:h-15 text-center text-lg font-semibold rounded-lg border-2 bg-[#F5F5F5] focus:outline-none transition-colors
-                  ${error ? "border-red-400 bg-red-50" : digit ? "border-[#68DB25] bg-white" : "border-transparent focus:border-[#68DB25]"}`}
+                className={`md:text-[20px] text-[14px] w-[calc((100%-40px)/6)] h-[47px] md:w-15 md:h-15 text-center text-lg font-semibold rounded-lg border-2 bg-[#F5F5F5] focus:outline-none transition-colors ${
+                  error
+                    ? "border-red-400 bg-red-50"
+                    : digit
+                      ? "border-[#68DB25] bg-white"
+                      : "border-transparent focus:border-[#68DB25]"
+                }`}
               />
             ))}
           </div>
@@ -170,17 +245,18 @@ function VerifyEmailContent() {
 
           <div className="flex gap-3 pt-1 w-full justify-center">
             <Link
-              href="/create-account"
+              href="/forgot-password"
               className="px-8.5 py-2.5 rounded-full border border-[#111111] text-[14px] font-semibold text-[#111111] hover:bg-gray-50 transition-colors"
             >
               Back
             </Link>
+
             <button
               onClick={handleVerify}
-              disabled={loading}
+              disabled={verifyingOtp}
               className="px-8.5 py-2.5 rounded-full bg-[#7ed957] hover:bg-[#5fc23e] text-[14px] text-[#111111] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Confirming..." : "Confirm"}
+              {verifyingOtp ? "Confirming..." : "Confirm"}
             </button>
           </div>
         </div>

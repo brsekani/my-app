@@ -19,7 +19,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // --------------------------------------------------
-  // Cookies
+  // Authentication cookies
   // --------------------------------------------------
 
   const token = request.cookies.get("shelfie_access_token")?.value;
@@ -30,8 +30,12 @@ export async function proxy(request: NextRequest) {
   const isAuthenticated = Boolean(token);
 
   // --------------------------------------------------
-  // Routes
+  // Route definitions
   // --------------------------------------------------
+
+  const isHomeRoute = pathname === "/";
+
+  const isLoginRoute = pathname === "/login";
 
   const isVerificationRoute = pathname.startsWith(
     "/create-account/verify-email",
@@ -39,115 +43,140 @@ export async function proxy(request: NextRequest) {
 
   const isSetupShopRoute = pathname.startsWith("/setup-shop");
 
-  const isHomeRoute = pathname === "/";
-
   const isProtectedRoute =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/products") ||
     pathname.startsWith("/settings");
 
   const isAuthRoute =
-    pathname === "/login" ||
+    isLoginRoute ||
     pathname.startsWith("/forgot-password") ||
     (pathname.startsWith("/create-account") && !isVerificationRoute);
 
   // --------------------------------------------------
-  // Not authenticated
+  // Unauthenticated users
   // --------------------------------------------------
 
-  if (!isAuthenticated && isProtectedRoute) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  if (!isAuthenticated) {
+    if (isProtectedRoute || isVerificationRoute) {
+      const loginUrl = new URL("/login", request.url);
+
+      // Preserve the destination after login.
+      loginUrl.searchParams.set("redirect", pathname + request.nextUrl.search);
+
+      return NextResponse.redirect(loginUrl);
+    }
+
+    return NextResponse.next();
   }
 
-  if (!isAuthenticated && isVerificationRoute) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
   // --------------------------------------------------
-  // Authenticated but email not verified
+  // Email verification
   // --------------------------------------------------
 
-  if (isAuthenticated && !emailVerified && isProtectedRoute) {
+  if (!emailVerified) {
+    // Unverified users should be allowed to verify their email
+    // and access authentication-related pages.
+    if (isVerificationRoute || isAuthRoute) {
+      return NextResponse.next();
+    }
+
+    // Require verification before accessing the store,
+    // dashboard, or other authenticated application pages.
     return NextResponse.redirect(
       new URL("/create-account/verify-email", request.url),
     );
   }
 
   // --------------------------------------------------
-  // Home
+  // Authenticated and verified users
   // --------------------------------------------------
 
-  if (isAuthenticated && isHomeRoute) {
-    return NextResponse.redirect(
-      new URL(
-        emailVerified ? "/dashboard" : "/create-account/verify-email",
-        request.url,
-      ),
-    );
+  // Don't check store status on login, signup, password recovery,
+  // or email verification pages.
+  if (isAuthRoute || isVerificationRoute) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // --------------------------------------------------
-  // IMPORTANT:
-  // Don't check the store while on auth pages.
-  //
-  // Otherwise an expired token can make:
-  //
-  // /login → /dashboard → 401 → /login → ...
+  // Check the authenticated user's store
   // --------------------------------------------------
 
-  if (
-    isAuthenticated &&
-    emailVerified &&
-    !isAuthRoute &&
-    !isVerificationRoute
-  ) {
-    const storeResponse = await fetch(
-      new URL("/api/customer/store", request.url),
-      {
-        headers: {
-          cookie: request.headers.get("cookie") ?? "",
-        },
-        cache: "no-store",
+  const storeResponse = await fetch(
+    new URL("/api/customer/store", request.url),
+    {
+      method: "GET",
+      headers: {
+        cookie: request.headers.get("cookie") ?? "",
       },
-    );
+      cache: "no-store",
+    },
+  );
 
-    // --------------------------------------------------
-    // Token is invalid / expired
-    // --------------------------------------------------
+  // --------------------------------------------------
+  // Invalid or expired authentication
+  // --------------------------------------------------
 
-    if (storeResponse.status === 401) {
-      const response = NextResponse.redirect(new URL("/login", request.url));
+  if (storeResponse.status === 401) {
+    const response = NextResponse.redirect(new URL("/login", request.url));
 
-      response.cookies.delete("shelfie_access_token");
-      response.cookies.delete("shelfie_email_verified");
+    response.cookies.delete("shelfie_access_token");
+    response.cookies.delete("shelfie_email_verified");
 
-      return response;
-    }
-
-    // --------------------------------------------------
-    // Store does not exist
-    // --------------------------------------------------
-
-    const hasStore = storeResponse.status !== 404;
-
-    if (!hasStore && !isSetupShopRoute) {
-      return NextResponse.redirect(new URL("/setup-shop", request.url));
-    }
-
-    if (hasStore && isSetupShopRoute) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
+    return response;
   }
 
   // --------------------------------------------------
-  // Authenticated users shouldn't see auth pages
+  // Customer has no store
   // --------------------------------------------------
 
-  if (
-    isAuthenticated &&
-    emailVerified &&
-    (isAuthRoute || isVerificationRoute)
-  ) {
+  if (storeResponse.status === 404) {
+    if (isSetupShopRoute) {
+      return NextResponse.next();
+    }
+
+    return NextResponse.redirect(new URL("/setup-shop", request.url));
+  }
+
+  // --------------------------------------------------
+  // Unexpected store API failure
+  // --------------------------------------------------
+
+  if (!storeResponse.ok) {
+    console.error("Unable to verify customer store:", storeResponse.status);
+
+    // Fail closed for routes requiring a valid store.
+    // Don't incorrectly redirect users to setup when the API
+    // is unavailable or returns an unexpected error.
+    if (isProtectedRoute || isSetupShopRoute || isHomeRoute) {
+      return new NextResponse(
+        "Unable to verify your store right now. Please try again.",
+        {
+          status: 503,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-store",
+          },
+        },
+      );
+    }
+
+    return NextResponse.next();
+  }
+
+  // --------------------------------------------------
+  // Customer already has a store
+  // --------------------------------------------------
+
+  if (isSetupShopRoute) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // --------------------------------------------------
+  // Homepage routing
+  // --------------------------------------------------
+
+  if (isHomeRoute) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

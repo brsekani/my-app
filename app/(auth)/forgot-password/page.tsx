@@ -10,9 +10,13 @@ import { forgotPasswordSchema } from "@/schemas";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { showToast } from "@/lib/toast";
+import { useRequestPasswordResetMutation } from "@/redux/api/passwordResetApi";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
 
 export default function Page() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [requestPasswordReset, { isLoading }] =
+    useRequestPasswordResetMutation();
   const router = useRouter();
 
   const {
@@ -26,12 +30,29 @@ export default function Page() {
   } = useFormik({
     initialValues: {
       email: "",
-      password: "",
     },
     validationSchema: forgotPasswordSchema,
     onSubmit: async (values) => {
       console.log(values);
-      router.push("/forgot-password/verify-email");
+
+      try {
+        const response = await requestPasswordReset(values).unwrap();
+
+        sessionStorage.setItem(
+          STORAGE_KEYS.passwordReset.pendingToken,
+          response.data.pending_token,
+        );
+
+        showToast.success(response.message);
+
+        router.push("/forgot-password/verify-email");
+      } catch (error: any) {
+        showToast.error(
+          error?.data?.message || "Unable to request password reset.",
+        );
+
+        console.error(error);
+      }
     },
   });
 
@@ -94,15 +115,28 @@ export default function Page() {
             <div className="flex gap-3 pt-1 w-full justify-center">
               <Link
                 href="/create-account"
-                className="px-8.5 py-2.5 rounded-full border border-[#111111] text-[14px] font-semibold text-[#111111] hover:bg-gray-50 transition-colors"
+                aria-disabled={isLoading}
+                tabIndex={isLoading ? -1 : 0}
+                onClick={(event) => {
+                  if (isLoading) {
+                    event.preventDefault();
+                  }
+                }}
+                className={`px-8.5 py-2.5 rounded-full border border-[#111111] text-[14px] font-semibold text-[#111111] transition-colors ${
+                  isLoading
+                    ? "pointer-events-none cursor-not-allowed opacity-50"
+                    : "hover:bg-gray-50"
+                }`}
               >
                 Cancel
               </Link>
+
               <button
                 type="submit"
+                disabled={isLoading}
                 className="px-8.5 py-2.5 rounded-full bg-[#7ed957] hover:bg-[#5fc23e] text-[14px] text-[#111111] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Reset Code
+                {isLoading ? "Sending Reset Code" : "Send Reset Code"}
               </button>
             </div>
           </form>

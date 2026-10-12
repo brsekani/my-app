@@ -123,3 +123,33 @@ export const changePasswordSchema = Yup.object({
     .oneOf([Yup.ref("newPassword")], "Passwords do not match")
     .required("Please confirm your password"),
 });
+
+export const resetPasswordSchema = Yup.object().shape({
+  password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .test("password-rules", function (value) {
+      if (!value) {
+        return this.createError({ message: "Password is required" });
+      }
+
+      const missing: string[] = [];
+
+      if (!/[A-Z]/.test(value)) missing.push("one uppercase letter");
+      if (!/[a-z]/.test(value)) missing.push("one lowercase letter");
+      if (!/[0-9]/.test(value)) missing.push("one number");
+      // Optional check for special character if desired, matching your UI bullet point
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(value))
+        missing.push("at least special character");
+
+      if (missing.length === 0) return true;
+
+      return this.createError({
+        message: `Password must contain: At least ${missing.join(", ")}`,
+      });
+    })
+    .required("Password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords don't match. Try again.")
+    .required("Confirm Password is required"),
+});

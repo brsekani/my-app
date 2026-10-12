@@ -7,7 +7,6 @@ import { request } from "http";
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.search;
-  console.log(`BUG:${query}`);
 
   const backendResponse = await backendFetch(`/customer/v1/products${query}`, {
     method: "GET",
