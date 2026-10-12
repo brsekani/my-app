@@ -7,7 +7,7 @@ import googleIcon from "@/assets/svgs/google.svg";
 import Image from "next/image";
 import { useSocialLoginMutation } from "@/redux/api/authApi";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { getFirebaseAuth } from "@/lib/firebase";
 
 export default function CreateAccount() {
   const [socialLogin, { isLoading }] = useSocialLoginMutation();
@@ -16,7 +16,7 @@ export default function CreateAccount() {
     try {
       const provider = new GoogleAuthProvider();
 
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(getFirebaseAuth(), provider);
       console.log(result);
 
       const firebaseIdToken = await result.user.getIdToken();

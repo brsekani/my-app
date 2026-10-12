@@ -16,7 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { getFirebaseAuth } from "@/lib/firebase";
 
 export default function Page() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function Page() {
     try {
       const provider = new GoogleAuthProvider();
 
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(getFirebaseAuth(), provider);
       console.log(result);
 
       const firebaseIdToken = await result.user.getIdToken();

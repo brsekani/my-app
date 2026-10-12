@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -10,6 +10,16 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+function getFirebaseAuth(): Auth {
+  if (!firebaseConfig.apiKey) {
+    throw new Error(
+      "Firebase API key is missing. Check NEXT_PUBLIC_FIREBASE_API_KEY.",
+    );
+  }
 
-export const auth = getAuth(app);
+  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+
+  return getAuth(app);
+}
+
+export { getFirebaseAuth };
