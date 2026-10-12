@@ -9,14 +9,48 @@ import { useFormik } from "formik";
 import { loginSchema } from "@/schemas";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useLoginCustomerMutation } from "@/redux/api/authApi";
+import {
+  useLoginCustomerMutation,
+  useSocialLoginMutation,
+} from "@/redux/api/authApi";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function Page() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loginCustomer, { isLoading }] = useLoginCustomerMutation();
+
+  const [socialLogin, { isLoading: isLoadingSocialLogin }] =
+    useSocialLoginMutation();
+
+  const handleGoogleSignup = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+
+      const result = await signInWithPopup(auth, provider);
+      console.log(result);
+
+      const firebaseIdToken = await result.user.getIdToken();
+      console.log(firebaseIdToken);
+
+      const response = await socialLogin({
+        provider: "GOOGLE",
+        access_token: firebaseIdToken,
+      }).unwrap();
+
+      window.location.assign("/");
+
+      console.log("Lumished social login:", response);
+
+      // Continue with your normal authentication flow here.
+      // response.data.token = Lumished Sanctum token
+    } catch (error) {
+      console.error("Google signup failed:", error);
+    }
+  };
 
   const {
     values,
@@ -91,10 +125,16 @@ export default function Page() {
             Log in to access your store and manage your products.
           </p>
 
-          <button className="flex items-center gap-2 py-[5.5px] pl-[14px] pr-[6px] border-[#e5e5e5] border-1 rounded-[24px]">
+          <button
+            type="button"
+            onClick={handleGoogleSignup}
+            disabled={isLoadingSocialLogin || isLoading}
+            className="flex items-center gap-2 py-[5.5px] pl-[14px] pr-[6px] border-[#e5e5e5] border-1 rounded-[24px]"
+          >
             <span className="font-medium text-[12px] leading-[100%] text-[#777777] uppercase">
-              Continue with Google
+              {isLoadingSocialLogin ? "Connecting..." : "Continue with Google"}
             </span>
+
             <div className="w-[28px] h-[28px] bg-[#F5F5F5] rounded-full flex items-center justify-center">
               <Image
                 src={googleIcon}

@@ -2,13 +2,9 @@
 
 import Badge from "@/components/Badge";
 import shoppingIcon from "@/assets/svgs/shopping-cart.svg";
-import googleIcon from "@/assets/svgs/google.svg";
-import eyeOpenIcon from "@/assets/svgs/eye-open.svg";
-import Image from "next/image";
 import { useFormik } from "formik";
 import { forgotPasswordSchema } from "@/schemas";
 import Link from "next/link";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { showToast } from "@/lib/toast";
 import { useRequestPasswordResetMutation } from "@/redux/api/passwordResetApi";
